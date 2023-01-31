@@ -12,9 +12,10 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
-  username  String
-  password  String
+  username  String   @unique
+  password  String   @db.Char(60)
   createdAt DateTime @default(now())
+  // Due to prisma weirdness with not being able to null a Datetime we assume a first login happens on creation
   lastLogin DateTime @default(now())
   profile   Profile?
 }
