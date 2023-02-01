@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
@@ -33,16 +34,20 @@ export default function Signup() {
       }),
     });
 
-    // TESTING
+    // Attempt to sign in the user
     if (res.status === 201) {
-      // TODO: If successful, redirect to the profile page
+      // If user was created successfully then sign them in - will currently handle failed attempts through nextauth
+      await signIn("credentials", {
+        redirect: false,
+      });
     } else if (res.status === 409) {
       // If user already exists, display an error
       setUserErrorMessage("User already exists");
     } else {
-      // Otherwise, display an error
+      // Otherwise, alert an error and then redirect to the home page
       const { error } = await res.json();
       alert(`Error: ${error}`);
+      window.location.href = "/";
     }
   };
 
