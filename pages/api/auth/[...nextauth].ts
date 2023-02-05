@@ -45,6 +45,16 @@ export default NextAuth({
           image: null,
         };
 
+        // Set the last login field and then return the userDefault
+        await prisma.user.update({
+          where: {
+            id: user.id
+          },
+          data: {
+            lastLogin: new Date()
+          }
+        });
+
         return userDefault;
       }
     })

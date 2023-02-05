@@ -88,7 +88,7 @@ export default function Signup() {
               href="/signin"
               className="text-sm text-blue-500 underline hover:text-blue-700"
             >
-              Sign in
+              Sign in.
             </Link>
           </span>
           <div className="p-6 mt-8">
