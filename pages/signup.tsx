@@ -49,8 +49,10 @@ export default function Signup() {
     // Attempt to sign in the user
     if (res.status === 201) {
       // If user was created successfully then sign them in - will currently handle failed attempts through nextauth
-      await signIn("credentials", {
-        redirect: false,
+      signIn("credentials", {
+        username,
+        password,
+        callbackUrl: "/",
       });
     } else if (res.status === 409) {
       // If user already exists, display an error

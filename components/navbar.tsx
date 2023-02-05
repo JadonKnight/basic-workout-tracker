@@ -12,8 +12,8 @@ interface NavLinks {
 }
 
 const navigation: NavLinks[] = [
-  { name: "Home", href: "/", current: true },
-  { name: "Past Workouts", href: "#", current: false },
+  // { name: "Home", href: "/", current: true },
+  // { name: "Past Workouts", href: "#", current: false },
 ];
 
 function classNames(...classes: string[]): string {
