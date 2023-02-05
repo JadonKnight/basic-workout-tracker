@@ -1,20 +1,21 @@
-import NextAuth, { DefaultUser } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import { compare as passwordCompare } from "../../../lib/password"
-import prisma from "../../../lib/prisma"
+import NextAuth, { DefaultUser } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { compare as passwordCompare } from "../../../lib/password";
+import prisma from "../../../lib/prisma";
 
 export default NextAuth({
-  secret: process.env.TOKEN_SECRET || 'somesecretstring',
+  secret: process.env.TOKEN_SECRET || "somesecretstring",
+  session: { strategy: "jwt" },
   providers: [
     CredentialsProvider({
-      name: 'your account',
+      name: "your account",
       credentials: {
         username: { label: "Username", type: "text", placeholder: "jsmith" },
         password: {  label: "Password", type: "password" }
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          return null
+          return null;
         }
 
         const user = await prisma.user.findUnique({
@@ -26,13 +27,13 @@ export default NextAuth({
             username: true,
             password: true
           }
-        })
+        });
 
         if (!user) {
           return null;
         }
 
-        const passwordMatch = await passwordCompare(credentials.password, user.password)
+        const passwordMatch = await passwordCompare(credentials.password, user.password);
         if (!passwordMatch) {
           return null;
         }
@@ -42,20 +43,13 @@ export default NextAuth({
           name: user.username,
           email: null,
           image: null,
-        }
+        };
 
         return userDefault;
       }
     })
   ],
-  callbacks: {
-    async jwt({ user, token, account, profile }) {
-      return token
-    },
-    async session({ session, token, user }) {
-      return session
-    }
-  },
-  // TODO: Add the custom login later
-  pages: {}
-})
+  pages: {
+    signIn: "/signin",
+  }
+});

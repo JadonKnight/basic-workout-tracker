@@ -3,7 +3,7 @@ import { Menu, Transition, Popover } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import Image from "next/image";
-import { useSession, signIn } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 interface NavLinks {
   name: string;
@@ -22,7 +22,20 @@ function classNames(...classes: string[]): string {
 
 export default function Navbar() {
   const { status } = useSession();
+  const loading = status === "loading";
   const authed = status === "authenticated";
+
+  if (loading) {
+    return (
+      <Popover as="nav" className="bg-gray-800">
+        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+          <div className="relative flex h-16 items-center justify-between">
+            <div className="absolute inset-y-0 left-0 flex items-center sm:hidden"></div>
+          </div>
+        </div>
+      </Popover>
+    );
+  }
 
   return (
     <Popover as="nav" className="bg-gray-800">
@@ -45,20 +58,22 @@ export default function Navbar() {
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
-                  <Image
-                    className="block h-8 w-auto lg:hidden"
-                    src="/images/logo.png"
-                    alt="Your Company"
-                    width={32}
-                    height={32}
-                  />
-                  <Image
-                    className="hidden h-8 w-auto lg:block"
-                    src="/images/logo.png"
-                    alt="Your Company"
-                    width={32}
-                    height={32}
-                  />
+                  <Link href="/">
+                    <Image
+                      className="block h-8 w-auto lg:hidden"
+                      src="/images/logo.png"
+                      alt="Your Company"
+                      width={32}
+                      height={32}
+                    />
+                    <Image
+                      className="hidden h-8 w-auto lg:block"
+                      src="/images/logo.png"
+                      alt="Your Company"
+                      width={32}
+                      height={32}
+                    />
+                  </Link>
                 </div>
                 {authed && (
                   <div className="hidden sm:ml-6 sm:block">
@@ -146,15 +161,16 @@ export default function Navbar() {
                           </Menu.Item>
                           <Menu.Item>
                             {({ active }) => (
-                              <Link
-                                href="/api/auth/signout"
+                              <button
+                                type="button"
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block px-4 py-2 text-sm text-gray-700 w-100 w-full text-left"
                                 )}
+                                onClick={() => signOut()}
                               >
                                 Sign out
-                              </Link>
+                              </button>
                             )}
                           </Menu.Item>
                         </Menu.Items>
@@ -163,13 +179,12 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
-                    <button
+                    <Link
                       className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded"
-                      onClick={() => signIn()}
-                      type="button"
+                      href='/signin'
                     >
                       Sign In
-                    </button>
+                    </Link>
                   </>
                 )}
               </div>

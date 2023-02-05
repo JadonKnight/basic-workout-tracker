@@ -1,12 +1,24 @@
 import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import Router from "next/router";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [userErrorMessage, setUserErrorMessage] = useState("");
   const [invalidPassword, setInvalidPassword] = useState(false);
+  const { status } = useSession();
+
+  // Empty div for loading
+  if (status === "loading") return <div></div>;
+
+  // If the user is already signed in, redirect them to where they came from
+  if (status === "authenticated") {
+    Router.back();
+    return;
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -132,7 +144,7 @@ export default function Signup() {
                   type="submit"
                   className="py-2 px-4  bg-purple-600 hover:bg-purple-700 focus:ring-purple-500 focus:ring-offset-purple-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none "
                 >
-                  Signup
+                  Sign up
                 </button>
               </div>
             </form>
