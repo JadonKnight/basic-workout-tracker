@@ -21,10 +21,10 @@ model User {
 }
 
 model Profile {
-  id     Int    @id @default(autoincrement())
-  name   String
-  email  String
-  avatar String
-  userId Int    @unique
-  user   User   @relation(fields: [userId], references: [id])
+  id     Int     @id @default(autoincrement())
+  name   String? @default("")
+  email  String? @default("")
+  avatar String? @default("")
+  userId Int     @unique
+  user   User    @relation(fields: [userId], references: [id])
 }

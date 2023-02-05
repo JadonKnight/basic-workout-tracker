@@ -12,9 +12,9 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Profile" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "avatar" TEXT NOT NULL,
+    "name" TEXT DEFAULT '',
+    "email" TEXT DEFAULT '',
+    "avatar" TEXT DEFAULT '',
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")

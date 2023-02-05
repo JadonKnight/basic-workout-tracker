@@ -12,13 +12,22 @@ export default async function handler(
     const hashedPassword = await hash(password);
 
     try {
-      const user = await prisma.user.create({
+      // Create a profile for the user then add the user
+      const profile = await prisma.profile.create({
         data: {
-          username,
-          password: hashedPassword,
+          user: {
+            create: {
+              username,
+              password: hashedPassword,
+            },
+          },
+          name: "",
+          email: "",
+          avatar: ""
         },
       });
-      return res.status(201).json(user);
+
+      return res.status(201).json(profile);
     } catch (err) {
       if (
         err instanceof Prisma.PrismaClientKnownRequestError &&
@@ -26,6 +35,7 @@ export default async function handler(
       ) {
         return res.status(409).json({ error: "Username already in use" });
       }
+      console.error(err);
       return res.status(500).json({ error: "Something went wrong" });
     }
   }
