@@ -7,6 +7,10 @@ export default function Home() {
 
   const authenticated = status === "authenticated";
 
+  if (status === "loading") {
+    return <div></div>;
+  }
+
   if (authenticated) {
     return (
       <>

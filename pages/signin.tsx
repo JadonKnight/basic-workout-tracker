@@ -12,10 +12,9 @@ export default function Signin() {
   // Empty div for loading
   if (status === "loading") return <div></div>;
 
-  // If the user is already signed in, redirect them to where they came from
   if (status === "authenticated") {
-    Router.back();
-    return;
+    Router.push("/");
+    return <div></div>;
   }
 
   const handleUsernameChange = (e: React.ChangeEvent<{ value: string }>) => {
