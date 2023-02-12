@@ -1,5 +1,13 @@
 module.exports = {
-  extends: "next/core-web-vitals",
+  root: true,
+  parser: "@typescript-eslint/parser",
+  plugins: [
+    "@typescript-eslint/eslint-plugin",
+  ],
+  extends: [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended"
+  ],
   rules: {
     semi: ["error", "always"],
     quotes: ["error", "double"],
@@ -15,7 +23,8 @@ module.exports = {
     "arrow-parens": ["error", "always"],
     indent: ["error", 2],
     "no-unused-expressions": ["error"],
-    "no-unused-vars": ["error"],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error"],
     "no-console": ["error"],
   },
 };
