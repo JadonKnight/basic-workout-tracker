@@ -16,10 +16,15 @@ module.exports = {
       },
     ],
     "arrow-parens": ["error", "always"],
-    indent: ["error", 2],
+    // indent: ["error", 2],
     "no-unused-expressions": ["error"],
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["error"],
     "no-console": ["error", { allow: ["error", "warn"] }],
+    // Ignore vars that start with _
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { argsIgnorePattern: "^_" },
+    ],
   },
 };
