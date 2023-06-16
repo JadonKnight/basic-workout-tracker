@@ -1,23 +1,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useSession } from "next-auth/react";
-import Router from "next/router";
+import { getSession } from "next-auth/react";
+import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [userErrorMessage, setUserErrorMessage] = useState("");
   const [invalidPassword, setInvalidPassword] = useState(false);
-  const { status } = useSession();
-
-  // Empty div for loading
-  if (status === "loading") return <div></div>;
-
-  if (status === "authenticated") {
-    Router.push("/");
-    return <div></div>;
-  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -150,8 +141,36 @@ export default function Signup() {
               </div>
             </form>
           </div>
+            {/* Home */}
+            <div className="flex justify-center mb-2">
+              <Link
+                className="text-blue-500 underline hover:text-blue-700"
+                href="/"
+              >
+                Home Page
+              </Link>
+            </div>
         </div>
       </div>
     </>
   );
+}
+
+// Check if user is logged in
+// If logged in, redirect to dashboard
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getSession(context);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/dashboard",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
 }

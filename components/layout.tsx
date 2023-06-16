@@ -1,10 +1,11 @@
 import Navbar from "./navbar";
+import { Session } from "next-auth";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children, session }: { children: React.ReactNode, session: Session | null }) {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="sticky top-0">
-        <Navbar />
+        <Navbar session={session}/>
       </div>
       <main className="flex-grow bg-gray-100">{children}</main>
       <footer className="bg-gray-800 py-4 text-center">

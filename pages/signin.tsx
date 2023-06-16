@@ -105,6 +105,10 @@ export default function Signin() {
               </span>
             </div>
           )}
+          {/* Home */}
+          <div className="flex justify-center mb-2">
+            <Link className="text-blue-500 underline hover:text-blue-700" href="/">Home Page</Link>
+          </div>
         </div>
       </div>
     </>
