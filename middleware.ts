@@ -9,4 +9,4 @@ export default withAuth({
   },
 });
 
-export const config = { matcher: ["/workout/new", "/api/:path*"] };
+export const config = { matcher: ["/workout/new", "/api/:path*", "/dashboard"] };

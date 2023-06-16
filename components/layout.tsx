@@ -7,8 +7,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Navbar />
       </div>
       <main className="flex-grow bg-gray-100">{children}</main>
-      <footer className="bg-gray-200 py-4 text-center">
-        <p className="text-sm text-gray-600">
+      <footer className="bg-gray-800 py-4 text-center">
+        <p className="text-sm text-white">
           This app is currently in alpha stage. &copy; Jadon Knight 2022-
           {new Date().getFullYear()}
         </p>

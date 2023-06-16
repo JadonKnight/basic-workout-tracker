@@ -1,21 +1,17 @@
 import Link from "next/link";
 import { useState } from "react";
-import { useSession, signIn, SignInResponse } from "next-auth/react";
-import Router from "next/router";
+import { signIn, SignInResponse } from "next-auth/react";
+import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
+import type { Session } from "next-auth";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function Signin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [invalidCredentials, setInvalidCredentials] = useState(false);
-  const { status } = useSession();
 
-  // Empty div for loading
-  if (status === "loading") return <div></div>;
-
-  if (status === "authenticated") {
-    Router.push("/");
-    return <div></div>;
-  }
+  const router = useRouter();
 
   const handleUsernameChange = (e: React.ChangeEvent<{ value: string }>) => {
     setUsername(e.target.value);
@@ -35,7 +31,7 @@ export default function Signin() {
     })) as SignInResponse;
 
     if (signInAttempt.ok) {
-      window.location.href = "/";
+      router.push("/dashboard");
     } else {
       // Wipe the password field
       setPassword("");
@@ -113,4 +109,27 @@ export default function Signin() {
       </div>
     </>
   );
+}
+
+// Check if user is logged in
+// If logged in, redirect to dashboard
+export async function getServerSideProps(
+  context: GetServerSidePropsContext
+): Promise<GetServerSidePropsResult<{ session: Session | null }>> {
+  const session = await getSession(context);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/dashboard",
+        permanent: true,
+      },
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
 }

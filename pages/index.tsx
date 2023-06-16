@@ -1,57 +1,122 @@
-import { useSession } from "next-auth/react";
-import WorkoutFab from "../components/workout-fab";
+import Link from "next/link";
+import {
+  CheckIcon,
+  PresentationChartLineIcon,
+  ChartPieIcon,
+} from "@heroicons/react/24/outline";
+import { getSession } from "next-auth/react";
 
 export default function Home() {
-  const { data: session, status } = useSession();
-  const username = session?.user?.name;
+  return (
+    <div className="bg-gray-100">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-b from-blue-500 to-indigo-500 text-white py-20">
+        <div className="container mx-auto text-center">
+          <h1 className="text-4xl font-bold mb-4">
+            Track and Improve Your Workouts
+          </h1>
+          <p className="text-lg mb-8">
+            Achieve your fitness goals with our powerful workout tracker.
+          </p>
+          <div className="space-x-4">
+            <Link
+              href="/signup"
+              className="bg-white text-blue-500 hover:bg-blue-600 hover:text-white px-6 py-3 rounded-md font-semibold"
+            >
+              Get Started
+            </Link>
+            <Link
+              href="/about"
+              className="text-blue-200 hover:text-white font-semibold"
+            >
+              Learn More
+            </Link>
+          </div>
+        </div>
+      </section>
 
-  const authenticated = status === "authenticated";
-
-  if (status === "loading") {
-    return <div></div>;
-  }
-
-  if (authenticated) {
-    return (
-      <>
-        <h1 className="text-2xl font-bold">Welcome {username}</h1>
-        <WorkoutFab />
-      </>
-    );
-  } else {
-    return (
-      <>
-        <section
-          className="h-screen bg-cover bg-teal-500 w-full"
-        >
-          <div className="flex pt-32 w-full items-center justify-center container mx-auto px-8">
-            <div className="max-w-2xl text-center">
-              <h1 className="text-3xl sm:text-5xl capitalize tracking-widest text-white lg:text-7xl">
-                Coming Soon
-              </h1>
-
-              {/* <p className="mt-6 lg:text-lg text-white">
-                You can subscribe to our newsletter, and let you know when we
-                are back
-              </p> */}
-
-              {/* TODO: Add This */}
-              {/* <div className="mt-8 flex flex-col space-y-3 sm:-mx-2 sm:flex-row sm:justify-center sm:space-y-0">
-                <input
-                  id="email"
-                  type="text"
-                  className="rounded-md border border-transparent bg-white/20 px-4 py-2 text-white placeholder-white backdrop-blur-sm focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 sm:mx-2"
-                  placeholder="Email Address"
-                />
-
-                <button className="transform rounded-md bg-blue-700 px-8 py-2 text-sm font-medium capitalize tracking-wide text-white transition-colors duration-200 hover:bg-blue-600 focus:bg-blue-600 focus:outline-none sm:mx-2">
-                  Notify Me
-                </button>
-              </div> */}
+      {/* Benefits Section */}
+      <section className="py-16">
+        <div className="container mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-8">
+            Why Choose Our Workout Tracker?
+          </h2>
+          <div className="flex flex-col md:flex-row items-center justify-center">
+            <div className="md:w-1/3 p-4">
+              <CheckIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Easy to Use</h3>
+              <p className="text-gray-600">
+                Simplify your workout tracking process with our intuitive
+                interface.
+              </p>
+            </div>
+            <div className="md:w-1/3 p-4">
+              <PresentationChartLineIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Track Progress</h3>
+              <p className="text-gray-600">
+                Monitor your progress over time and see how you are improving.
+                improving.
+              </p>
+            </div>
+            <div className="md:w-1/3 p-4">
+              <ChartPieIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">
+                Insightful Statistics
+              </h3>
+              <p className="text-gray-600">
+                Gain valuable insights from detailed statistics about your
+                workouts.
+              </p>
             </div>
           </div>
-        </section>
-      </>
-    );
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="bg-gradient-to-b from-blue-500 to-indigo-500 py-16">
+        <div className="container mx-auto text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Ready to Get Started?
+          </h2>
+          <p className="text-lg text-white mb-8">
+            Sign up now and take control of your fitness journey!
+          </p>
+          <Link
+            href="/signup"
+            className="bg-white text-blue-500 hover:bg-blue-600 hover:text-white px-6 py-3 rounded-md font-semibold"
+          >
+            Sign Up
+          </Link>
+        </div>
+      </section>
+
+      {/* Additional Sections (if needed) */}
+      {/* ... */}
+    </div>
+  );
+}
+import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
+import type { Session } from "next-auth";
+
+// Check if user is logged in
+// If logged in, redirect to dashboard
+export async function getServerSideProps(
+  context: GetServerSidePropsContext
+): Promise<GetServerSidePropsResult<{ session: Session | null }>> {
+  const session = await getSession(context);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/dashboard",
+        permanent: true,
+      },
+    };
   }
+
+  return {
+    props: {
+      session,
+    },
+  };
 }
