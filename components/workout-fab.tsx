@@ -1,11 +1,16 @@
+import Link from "next/link";
+
 export default function WorkoutFab() {
   return (
     <div className="flex fixed bottom-0 right-0 m-4">
-      <button className="p-0 w-10 h-10 bg-teal-500 rounded-full hover:bg-teal-700 active:shadow-lg mouse shadow transition ease-in duration-200 focus:outline-none">
+      <Link
+        href="/workout/new"
+        className="p-0 w-10 h-10 bg-teal-500 rounded-full hover:bg-teal-700 active:shadow-lg mouse shadow transition ease-in duration-200 focus:outline-none flex items-center justify-center"
+      >
         <svg
           viewBox="0 0 20 20"
           enableBackground="new 0 0 20 20"
-          className="w-6 h-6 inline-block"
+          className="w-6 h-6"
         >
           <path
             fill="#FFFFFF"
@@ -14,7 +19,7 @@ export default function WorkoutFab() {
                                 C15.952,9,16,9.447,16,10z"
           />
         </svg>
-      </button>
+      </Link>
     </div>
   );
 }

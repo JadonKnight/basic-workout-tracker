@@ -20,6 +20,9 @@ function classNames(...classes: string[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
+// FIXME: Change the client side useSession to a Serverside props to prevent
+// the flash of unauthenticated content
+
 export default function Navbar() {
   const { status } = useSession();
   const loading = status === "loading";

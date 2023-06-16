@@ -1,17 +1,21 @@
-import NextAuth, { DefaultUser } from "next-auth";
+import NextAuth, { DefaultUser, SessionStrategy } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare as passwordCompare } from "../../../lib/password";
 import prisma from "../../../lib/prisma";
 
-export default NextAuth({
-  secret: process.env.TOKEN_SECRET || "somesecretstring",
-  session: { strategy: "jwt" },
+const sessionStrategy: SessionStrategy = "jwt";
+
+export const authOptions = {
+  secret: process.env.NEXTAUTH_SECRET || "somesecretstring",
+  session: {
+    strategy: sessionStrategy,
+  },
   providers: [
     CredentialsProvider({
       name: "your account",
       credentials: {
         username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: {  label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
@@ -20,20 +24,28 @@ export default NextAuth({
 
         const user = await prisma.user.findUnique({
           where: {
-            username: credentials.username
+            username: credentials.username,
           },
           select: {
             id: true,
             username: true,
-            password: true
-          }
+            password: true,
+            profile: {
+              select: {
+                email: true,
+              },
+            },
+          },
         });
 
         if (!user) {
           return null;
         }
 
-        const passwordMatch = await passwordCompare(credentials.password, user.password);
+        const passwordMatch = await passwordCompare(
+          credentials.password,
+          user.password
+        );
         if (!passwordMatch) {
           return null;
         }
@@ -41,25 +53,27 @@ export default NextAuth({
         const userDefault: DefaultUser = {
           id: user.id.toString(),
           name: user.username,
-          email: null,
+          email: user.profile?.email,
           image: null,
         };
 
         // Set the last login field and then return the userDefault
         await prisma.user.update({
           where: {
-            id: user.id
+            id: user.id,
           },
           data: {
-            lastLogin: new Date()
-          }
+            lastLogin: new Date(),
+          },
         });
 
         return userDefault;
-      }
-    })
+      },
+    }),
   ],
   pages: {
     signIn: "/signin",
-  }
-});
+  },
+};
+
+export default NextAuth(authOptions);

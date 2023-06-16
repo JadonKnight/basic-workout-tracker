@@ -1,6 +1,5 @@
 /**
  * This module uses a bitmask to represent the days of the week.
- * TODO: Unit test this
  */
 
 import { DaysOfWeekSelection } from "@/types/interfaces";

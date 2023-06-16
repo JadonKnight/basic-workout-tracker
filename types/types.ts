@@ -2,6 +2,8 @@
  * At the moment the project is small enough for 1 global interface file.
  * If the project grows, we can split this into multiple files.
  */
+import z from "zod";
+import { workoutSubmissionSchema, exerciseSelectionSchema } from "./schemas";
 
 export interface DaysOfWeekSelection {
   Sunday: boolean;
@@ -13,3 +15,5 @@ export interface DaysOfWeekSelection {
   Saturday: boolean;
 }
 
+export type ExerciseSelection = z.infer<typeof exerciseSelectionSchema>;
+export type WorkoutSubmission = z.infer<typeof workoutSubmissionSchema>;

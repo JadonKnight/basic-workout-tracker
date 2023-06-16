@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import WorkoutFab from "../components/buttons/workout-fab";
+import WorkoutFab from "../components/workout-fab";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -22,7 +22,7 @@ export default function Home() {
     return (
       <>
         <section
-          className="h-screen bg-cover bg-teal-500"
+          className="h-screen bg-cover bg-teal-500 w-full"
         >
           <div className="flex pt-32 w-full items-center justify-center container mx-auto px-8">
             <div className="max-w-2xl text-center">
