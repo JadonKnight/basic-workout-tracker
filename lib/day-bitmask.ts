@@ -2,7 +2,7 @@
  * This module uses a bitmask to represent the days of the week.
  */
 
-import { DaysOfWeekSelection } from "@/types/interfaces";
+import { DaysOfWeekSelection } from "@/types/types";
 
 type DaysOfWeek = "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
 type DaysOfWeekBitmaskValues = 1 | 2 | 4 | 8 | 16 | 32 | 64;
