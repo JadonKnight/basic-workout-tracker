@@ -13,3 +13,9 @@ export const workoutSubmissionSchema = z.object({
   ),
   daysOfWeek: z.number(),
 });
+
+export const workoutSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  daysOfWeek: z.number(),
+});

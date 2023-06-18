@@ -1,10 +1,12 @@
 // Setup a handler to create a workout
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../lib/prisma";
+import prisma from "../../../lib/prisma";
 import z from "zod";
 import { workoutSubmissionSchema } from "@/types/schemas";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import HashId from "@/lib/hashid";
+import type { Workout } from "@/types/types";
 
 export default async function handler(
   req: NextApiRequest,
@@ -44,11 +46,11 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
           select: {
             id: true,
           },
-        }
-      }
+        },
+      },
     });
 
-    const { id: userId} = userProfile?.user || {};
+    const { id: userId } = userProfile?.user || {};
 
     if (!userId) {
       return res.status(401).json({ error: "No user found..." });
@@ -73,12 +75,57 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: error.errors });
     } else {
-      throw error;
+      res.status(500).json({ error: "Something went wrong" });
     }
   }
 }
 
-// TODO: Get this working to get workouts.
-function GET(req: NextApiRequest, res: NextApiResponse) {
-  res.json({ message: "GET /api/workout" });
+async function GET(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getServerSession(req, res, authOptions);
+  const user = session?.user;
+
+  if (!user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const userProfile = await prisma.profile.findUnique({
+    where: {
+      email: user.email?.toString(),
+    },
+    select: {
+      user: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  const { id: userId } = userProfile?.user || {};
+
+  if (!userId) {
+    return res.status(401).json({ error: "No user found..." });
+  }
+
+  const workouts = await prisma.workout.findMany({
+    where: {
+      userId: userId,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      name: true,
+      daysOfWeek: true,
+    },
+  });
+
+  const resData: Workout[] = workouts.map((workout) => {
+    return {
+      id: HashId.encode(workout.id),
+      name: workout.name,
+      daysOfWeek: workout.daysOfWeek,
+    };
+  });
+
+  res.json({ workouts: resData });
 }

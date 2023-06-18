@@ -22,19 +22,19 @@ export default function Dashboard({ session }: { session: Session }) {
                 href="/workout/new"
                 className="bg-white text-blue-500 hover:bg-blue-600 hover:text-white px-6 py-3 rounded-md font-semibold"
               >
-                Create Workout
+                Create New Workout
               </Link>
               <Link
-                href="/workout/stats"
-                className="bg-white text-indigo-500 hover:bg-indigo-600 hover:text-white px-6 py-3 rounded-md font-semibold"
-              >
-                View Statistics
-              </Link>
-              <Link
-                href="/workout/perform"
+                href="/workout"
                 className="bg-white text-green-500 hover:bg-green-600 hover:text-white px-6 py-3 rounded-md font-semibold"
               >
-                Perform Workout
+                Your Workouts
+              </Link>
+              <Link
+                href="/workout/statistics"
+                className="bg-white text-indigo-500 hover:bg-indigo-600 hover:text-white px-6 py-3 rounded-md font-semibold"
+              >
+                Stats
               </Link>
             </div>
           </div>

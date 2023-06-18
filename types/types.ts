@@ -3,7 +3,11 @@
  * If the project grows, we can split this into multiple files.
  */
 import z from "zod";
-import { workoutSubmissionSchema, exerciseSelectionSchema } from "./schemas";
+import {
+  workoutSubmissionSchema,
+  exerciseSelectionSchema,
+  workoutSchema,
+} from "./schemas";
 
 export interface DaysOfWeekSelection {
   Sunday: boolean;
@@ -17,3 +21,4 @@ export interface DaysOfWeekSelection {
 
 export type ExerciseSelection = z.infer<typeof exerciseSelectionSchema>;
 export type WorkoutSubmission = z.infer<typeof workoutSubmissionSchema>;
+export type Workout = z.infer<typeof workoutSchema>;

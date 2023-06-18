@@ -45,6 +45,7 @@ model Exercise {
 model Workout {
   id              Int               @id @default(autoincrement())
   createdAt       DateTime          @default(now())
+  deletedAt       DateTime?
   name            String            @default("")
   userId          Int
   user            User              @relation(fields: [userId], references: [id])
