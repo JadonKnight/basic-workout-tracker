@@ -2,7 +2,7 @@ import NextAuth, { DefaultUser, SessionStrategy } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare as passwordCompare } from "../../../lib/password";
 import prisma from "../../../lib/prisma";
-
+import { Session } from "next-auth/client";
 const sessionStrategy: SessionStrategy = "jwt";
 
 export const authOptions = {
@@ -73,6 +73,27 @@ export const authOptions = {
   ],
   pages: {
     signIn: "/signin",
+  },
+  callbacks: {
+    async session({
+      session,
+      _user,
+      token,
+    }: {
+      session: Session;
+      _user: unknown;
+      token: {
+        sub: string;
+      };
+    }) {
+      if (session.user) {
+        // Janky workaround for adding user id to session.
+        // Probably need to change strategy to database sessions
+        // but still learning.
+        session.user.id = token.sub;
+      }
+      return session;
+    },
   },
 };
 

@@ -12,6 +12,12 @@ export default async function handler(
   if (req.method === "DELETE") {
     return DELETE(req, res);
   }
+  if (req.method === "GET") {
+    return GET(req, res);
+  }
+  if (req.method === "PUT") {
+    return PUT(req, res);
+  }
   res.status(405).end();
 }
 
@@ -69,4 +75,50 @@ async function DELETE(req: NextApiRequest, res: NextApiResponse) {
     }
     return res.status(500).json({ error: "Error deleting workout" });
   }
+}
+
+async function GET(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getServerSession(req, res, authOptions);
+  const user = session?.user;
+  if (!user || !Number(user.id)) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const { id: workoutId } = req.query;
+  if (!workoutId) {
+    return res.status(400).json({ error: "No workout id provided" });
+  }
+  const parsedWorkoutId = [...workoutId].join("").toString();
+  const decodedWorkoutId = Number(hashId.decode(parsedWorkoutId));
+
+  const workout = await prisma.workout.findFirst({
+    where: {
+      id: decodedWorkoutId,
+      userId: Number(user.id),
+      deletedAt: null,
+    },
+    select: {
+      daysOfWeek: true,
+      id: true,
+      name: true,
+      workoutExercise: {
+        select: {
+          exercise: {
+            select: {
+              name: true,
+              description: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!workout) {
+    return res.status(404).json({ error: "Workout not found" });
+  }
+
+  console.log(JSON.stringify(workout));
+
+  res.status(200).json({ ...workout, id: hashId.encode(workout.id) });
 }
