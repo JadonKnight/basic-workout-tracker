@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
-import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
+import type { GetServerSidePropsContext } from "next";
 
 export default function Signup() {
   const [username, setUsername] = useState("");

@@ -82,7 +82,6 @@ export default function NewWorkoutPage({ session } : {session: Session | null}) 
       console.error("Client error");
     }
 
-    console.log("Workout created", await response.json());
     // Router.push("/");
   };
 

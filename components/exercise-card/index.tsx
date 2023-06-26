@@ -29,9 +29,8 @@ export default function ExerciseCard({ name }: Props) {
                 <div className="flex flex-row">
                   <Disclosure.Button className="p-4">
                     <ChevronDownIcon
-                      className={`${
-                        open ? "rotate-180 transform" : ""
-                      } h-8 w-8`}
+                      className={`${open ? "rotate-180 transform" : ""
+                        } h-8 w-8`}
                     />
                   </Disclosure.Button>
                 </div>
@@ -42,9 +41,7 @@ export default function ExerciseCard({ name }: Props) {
                 <div className="flex flex-col p-4">
                   <NumberSetting
                     name="Set"
-                    onSettingChange={(value) =>
-                      console.log(`Value from parent is ${value}`)
-                    }
+                    onSettingChange={() => undefined}
                   />
                 </div>
                 <div className="flex flex-col p-4">
