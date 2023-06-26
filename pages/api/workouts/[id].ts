@@ -15,9 +15,10 @@ export default async function handler(
   if (req.method === "GET") {
     return GET(req, res);
   }
-  if (req.method === "PUT") {
-    return PUT(req, res);
-  }
+  // TODO: Implement PUT method
+  // if (req.method === "PUT") {
+  //   return PUT(req, res);
+  // }
   res.status(405).end();
 }
 
@@ -78,6 +79,7 @@ async function DELETE(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function GET(req: NextApiRequest, res: NextApiResponse) {
+  // FIXME: Fix up the session typing here...
   const session = await getServerSession(req, res, authOptions);
   const user = session?.user;
   if (!user || !Number(user.id)) {
@@ -107,6 +109,7 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
             select: {
               name: true,
               description: true,
+              id: true
             },
           },
         },
@@ -118,7 +121,17 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
     return res.status(404).json({ error: "Workout not found" });
   }
 
-  console.log(JSON.stringify(workout));
-
-  res.status(200).json({ ...workout, id: hashId.encode(workout.id) });
+  res.status(200).json({
+    name: workout.name,
+    daysOfWeek: workout.daysOfWeek,
+    // Probably not a good way to do it... oh well.
+    exercises: workout.workoutExercise.map((exercise) => {
+      return {
+        name: exercise.exercise.name,
+        description: exercise.exercise.description,
+        id: hashId.encode(exercise.exercise.id)
+      };
+    }),
+    id: hashId.encode(workout.id)
+  });
 }
