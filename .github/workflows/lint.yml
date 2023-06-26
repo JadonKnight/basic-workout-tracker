@@ -6,6 +6,7 @@ on: # event list
       - development
       - staging
       - production
+      - master
 
 env: # environment variables (available in any part of the action)
   NODE_VERSION: 18
