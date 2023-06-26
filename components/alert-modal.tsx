@@ -6,6 +6,7 @@ interface AlertModalProps {
   title: string;
   description: string;
   onConfirm: () => void;
+  onCancel: () => void;
   active: boolean;
 }
 
@@ -13,12 +14,14 @@ export default function MyModal({
   title,
   description,
   onConfirm,
+  onCancel,
   active,
 }: AlertModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
     setIsOpen(false);
+    onCancel();
   }
 
   // function openModal() {

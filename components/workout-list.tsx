@@ -52,6 +52,17 @@ export default function WorkoutList({
             onConfirm={async () => {
               deleteWorkout(workout.id);
             }}
+            onCancel={() => {
+              setWorkouts(
+                workouts.map((_workout) => {
+                  if (_workout.id === workout.id) {
+                    return { ...workout, alert: false };
+                  }
+                  return _workout;
+                }
+                )
+              );
+            }}
             active={workout.alert || false}
           />
           <div className="flex justify-between items-center">
