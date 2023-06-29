@@ -5,6 +5,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import hashId from "@/lib/hashid";
 
+import z from "zod";
+import { workoutSubmissionSchema } from "@/types/schemas";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -15,12 +18,13 @@ export default async function handler(
   if (req.method === "GET") {
     return GET(req, res);
   }
-  // TODO: Implement PUT method
-  // if (req.method === "PUT") {
-  //   return PUT(req, res);
-  // }
+  if (req.method === "PUT") {
+    return PUT(req, res);
+  }
   res.status(405).end();
 }
+
+// FIXME: We don't make checks that users own their workouts...
 
 async function DELETE(req: NextApiRequest, res: NextApiResponse) {
   // Get the session
@@ -134,4 +138,53 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
     }),
     id: hashId.encode(workout.id)
   });
+}
+
+async function PUT(req: NextApiRequest, res: NextApiResponse) {
+  // FIXME: Fix up the session typing here...
+  const session = await getServerSession(req, res, authOptions);
+  const user = session?.user;
+  if (!user || !Number(user.id)) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const { id: workoutId } = req.query;
+  if (!workoutId) {
+    return res.status(400).json({ error: "No workout id provided" });
+  }
+  const parsedWorkoutId = [...workoutId].join("").toString();
+  const decodedWorkoutId = Number(hashId.decode(parsedWorkoutId));
+
+  // Validate the request body
+  try {
+    const workoutSubmission = workoutSubmissionSchema.parse(
+      JSON.parse(req.body)
+    );
+
+    // Create a new workout
+    const workoutUpdate = await prisma.workout.update({
+      where: {
+        id: decodedWorkoutId
+      },
+      data: {
+        name: workoutSubmission.name,
+        daysOfWeek: workoutSubmission.daysOfWeek,
+        updatedAt: Date.now(),
+        workoutExercise: {
+          deleteMany: {},
+          create: workoutSubmission.exercises.map((exercise) => ({
+            exerciseId: exercise.id,
+          })),
+        },
+      },
+    });
+
+    res.json({ message: `Updated ${workoutUpdate.name}` });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: error.errors });
+    } else {
+      res.status(500).json({ error: "Something went wrong" });
+    }
+  }
 }

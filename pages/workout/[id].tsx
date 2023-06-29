@@ -16,6 +16,7 @@ import type {
 } from "@/types/types";
 import { maskDaysOfWeek, unmaskDaysOfWeek } from "@/lib/day-bitmask";
 
+// TODO: Implement back button and api
 export default function Workout({ session }: { session: Session }) {
   const router = useRouter();
   const { id } = router.query;
@@ -80,7 +81,7 @@ export default function Workout({ session }: { session: Session }) {
     }
 
     const filteredExercises = exercises.filter(
-      (exercise) => exercise.id !== undefined
+      (exercise) => exercise.name !== ""
     );
 
     if (filteredExercises.length === 0) {
@@ -102,21 +103,19 @@ export default function Workout({ session }: { session: Session }) {
     };
 
     // TODO: Change this to PUT since we will update the entire workout
-    // const response = await fetch("/api/workouts", {
-    //   method: "POST",
-    //   body: JSON.stringify(data),
-    // });
+    const response = await fetch(`/api/workouts/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
 
     // // TODO: Fix this - I need a protocol for handling errors
-    // if (!response.ok && response.status >= 500) {
-    //   // Router.push("/500");
-    //   console.error("Server error");
-    // } else if (!response.ok) {
-    //   // Router.push("/400");
-    //   console.error("Client error");
-    // }
-
-    console.log(data);
+    if (!response.ok && response.status >= 500) {
+      // Router.push("/500");
+      console.error("Server error");
+    } else if (!response.ok) {
+      // Router.push("/400");
+      console.error("Client error");
+    }
 
     // Router.push("/");
   };
@@ -139,7 +138,7 @@ export default function Workout({ session }: { session: Session }) {
           <label className="text-xl">Workout Name</label>
           <input
             type="text"
-            value={workout?.name || ""}
+            value={workoutName || ""}
             onChange={handleWorkoutNameChange}
             className="bg-white p-3 border-white rounded focus-visible:outline-slate-400"
           />

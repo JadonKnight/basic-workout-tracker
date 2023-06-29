@@ -47,7 +47,7 @@ export default function NewWorkoutPage({ session } : {session: Session | null}) 
     }
 
     const filteredExercises = exercises.filter(
-      (exercise) => exercise.id !== undefined
+      (exercise) => exercise.name !== ""
     );
 
     if (filteredExercises.length === 0) {

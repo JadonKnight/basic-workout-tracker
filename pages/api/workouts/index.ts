@@ -6,7 +6,6 @@ import { workoutSubmissionSchema } from "@/types/schemas";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import HashId from "@/lib/hashid";
-import type { Workout } from "@/types/types";
 
 export default async function handler(
   req: NextApiRequest,
@@ -119,7 +118,7 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
     },
   });
 
-  const resData: Workout[] = workouts.map((workout) => {
+  const resData = workouts.map((workout) => {
     return {
       id: HashId.encode(workout.id),
       name: workout.name,

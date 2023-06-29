@@ -9,7 +9,7 @@ export const exerciseSelectionSchema = z.object({
 export const exerciseSchema = z.object({
   name: z.string(),
   description: z.string(),
-  id: z.number()
+  id: z.string()
 });
 
 export const workoutSubmissionSchema = z.object({
