@@ -12,21 +12,18 @@ import type {
   DaysOfWeekSelection,
   ExerciseSelection,
   Workout,
-  WorkoutSubmission
+  WorkoutSubmission,
 } from "@/types/types";
 import { maskDaysOfWeek, unmaskDaysOfWeek } from "@/lib/day-bitmask";
 
 // TODO: Implement back button and api
 export default function Workout({ session }: { session: Session }) {
+  // Loaded Workout
   const router = useRouter();
   const { id } = router.query;
-  // Loaded Workout
   const [workout, setWorkout] = useState<Workout | null>(null);
 
-  // TODO: Now I am finally fetching workout data, time to display it
-  // and allow it to be updated.
-
-  // Editables
+  // Editable data
   const [exercises, setExercises] = useState<ExerciseSelection[]>([
     { name: "", id: NaN },
   ]);
@@ -53,12 +50,14 @@ export default function Workout({ session }: { session: Session }) {
         setWorkout(data);
         setWorkoutName(data.name);
         setDaysOfWeek(unmaskDaysOfWeek(data.daysOfWeek));
-        setExercises(data.exercises.map((exercise) => {
-          return {
-            name: exercise.name,
-            id: Number(hashId.decode(exercise.id))
-          };
-        }));
+        setExercises(
+          data.exercises.map((exercise) => {
+            return {
+              name: exercise.name,
+              id: Number(hashId.decode(exercise.id)),
+            };
+          })
+        );
       }
     };
     fetchWorkout();
@@ -133,7 +132,9 @@ export default function Workout({ session }: { session: Session }) {
   return (
     <Layout session={session}>
       <div className="flex flex-col items-center">
-        <h2 className="text-2xl p-3 text-center w-full">Edit {workout?.name || "Workout"}</h2>
+        <h2 className="text-2xl p-3 text-center w-full">
+          Edit {workout?.name || "Workout"}
+        </h2>
         <div className="flex flex-col w-full md:w-6/12 p-3">
           <label className="text-xl">Workout Name</label>
           <input

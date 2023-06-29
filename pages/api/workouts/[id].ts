@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../lib/prisma";
+import prisma from "@/lib/prisma";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -169,7 +169,7 @@ async function PUT(req: NextApiRequest, res: NextApiResponse) {
       data: {
         name: workoutSubmission.name,
         daysOfWeek: workoutSubmission.daysOfWeek,
-        updatedAt: Date.now(),
+        updatedAt: new Date(),
         workoutExercise: {
           deleteMany: {},
           create: workoutSubmission.exercises.map((exercise) => ({
