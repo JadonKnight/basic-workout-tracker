@@ -1,34 +1,33 @@
 import { useRouter } from "next/router";
 import Layout from "@/components/layout";
 import { getSession } from "next-auth/react";
-import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
-import type { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import hashId from "@/lib/hashid";
+import { maskDaysOfWeek, unmaskDaysOfWeek } from "@/lib/day-bitmask";
+import ExerciseSelect from "@/components/exercise-selection";
 
-import SelectWorkout from "../../components/select-exercise";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
+import type { Session } from "next-auth";
 import type {
   DaysOfWeekSelection,
   ExerciseSelection,
   Workout,
   WorkoutSubmission,
 } from "@/types/types";
-import { maskDaysOfWeek, unmaskDaysOfWeek } from "@/lib/day-bitmask";
 
 // TODO: Implement back button and api
 export default function Workout({ session }: { session: Session }) {
-  // Loaded Workout
+  // Loaded Workout data
   const router = useRouter();
   const { id } = router.query;
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [workoutLoaded, setWorkoutLoaded] = useState<boolean>(false);
+  const [workoutExercises, setWorkoutExercises] = useState<ExerciseSelection[]>(
+    []
+  );
 
-  // Editable data
-  const [exercises, setExercises] = useState<ExerciseSelection[]>([
-    { name: "", id: NaN },
-  ]);
-  const [invalidExercise, setInvalidExercise] = useState<boolean>(false);
+  // Data to update
+  const [exercises, setExercises] = useState<ExerciseSelection[]>([]);
   const [invalidWorkoutName, setInvalidWorkoutName] = useState<boolean>(false);
   const [daysOfWeek, setDaysOfWeek] = useState<DaysOfWeekSelection>({
     Monday: false,
@@ -51,7 +50,7 @@ export default function Workout({ session }: { session: Session }) {
         setWorkout(data);
         setWorkoutName(data.name);
         setDaysOfWeek(unmaskDaysOfWeek(data.daysOfWeek));
-        setExercises(
+        setWorkoutExercises(
           data.exercises.map((exercise) => {
             return {
               name: exercise.name,
@@ -59,19 +58,10 @@ export default function Workout({ session }: { session: Session }) {
             };
           })
         );
-        setWorkoutLoaded(true);
       }
     };
     fetchWorkout();
   }, [id]);
-
-  const handleRemoveExercise = (index: number) => {
-    // If there is only one exercise, don't remove it
-    if (exercises.length === 1) {
-      return;
-    }
-    setExercises(exercises.filter((_, i) => i !== index));
-  };
 
   const submitWorkout = async () => {
     let isValid = true;
@@ -84,11 +74,6 @@ export default function Workout({ session }: { session: Session }) {
     const filteredExercises = exercises.filter(
       (exercise) => exercise.name !== ""
     );
-
-    if (filteredExercises.length === 0) {
-      setInvalidExercise(true);
-      isValid = false;
-    }
 
     if (Object.values(daysOfWeek).every((day) => day === false)) {
       setInvalidDaysOfWeek(true);
@@ -103,7 +88,6 @@ export default function Workout({ session }: { session: Session }) {
       daysOfWeek: maskDaysOfWeek(daysOfWeek),
     };
 
-    // TODO: Change this to PUT since we will update the entire workout
     const response = await fetch(`/api/workouts/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
@@ -133,178 +117,159 @@ export default function Workout({ session }: { session: Session }) {
 
   return (
     <Layout session={session}>
-      <div className="flex flex-col flex-grow-1 items-center">
-        {!workoutLoaded ? (
-          <div className="flex items-center justify-center fixed inset-0">
-            <div
-              className="inline-block text-violet-300 h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-              role="status"
-            >
-              <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                Loading...
-              </span>
+      <div
+        className={`${
+          !workoutLoaded ? "flex" : "hidden"
+        } items-center justify-center fixed inset-0`}
+      >
+        <div
+          className="inline-block text-violet-300 h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+          role="status"
+        >
+          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+            Loading...
+          </span>
+        </div>
+      </div>
+      <div
+        className={`${
+          workoutLoaded ? "flex" : "hidden"
+        } flex-col flex-grow-1 items-center`}
+      >
+        <h2 className="text-2xl p-3 text-center w-full">
+          Edit {workout?.name || "Workout"}
+        </h2>
+        <div className="flex flex-col w-full md:w-6/12 p-3">
+          <label className="text-xl">Workout Name</label>
+          <input
+            type="text"
+            value={workoutName || ""}
+            onChange={handleWorkoutNameChange}
+            className="bg-white p-3 border-white rounded focus-visible:outline-slate-400"
+          />
+          {invalidWorkoutName && (
+            <p className="text-red-500">Please enter a workout name</p>
+          )}
+        </div>
+
+        {/* Select days of week */}
+        <div className="flex flex-col w-full md:w-6/12 p-3">
+          <label className="text-xl">Select Days of Week</label>
+          {/* setup a 3 by 3 grid for each checkbox */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="flex flex-row items-center">
+              <input
+                type="checkbox"
+                checked={daysOfWeek.Monday || false}
+                className="form-checkbox"
+                onChange={() => {
+                  handleAddWeekday("Monday");
+                }}
+              />
+              <label className="ml-2">Monday</label>
+            </div>
+            <div className="flex flex-row items-center">
+              <input
+                type="checkbox"
+                checked={daysOfWeek.Tuesday || false}
+                className="form-checkbox"
+                onChange={() => {
+                  handleAddWeekday("Tuesday");
+                }}
+              />
+              <label className="ml-2">Tuesday</label>
+            </div>
+            <div className="flex flex-row items-center">
+              <input
+                type="checkbox"
+                checked={daysOfWeek.Wednesday || false}
+                className="form-checkbox"
+                onChange={() => {
+                  handleAddWeekday("Wednesday");
+                }}
+              />
+              <label className="ml-2">Wednesday</label>
+            </div>
+            <div className="flex flex-row items-center">
+              <input
+                type="checkbox"
+                checked={daysOfWeek.Thursday || false}
+                className="form-checkbox"
+                onChange={() => {
+                  handleAddWeekday("Thursday");
+                }}
+              />
+              <label className="ml-2">Thursday</label>
+            </div>
+            <div className="flex flex-row items-center">
+              <input
+                type="checkbox"
+                checked={daysOfWeek.Friday || false}
+                className="form-checkbox"
+                onChange={() => {
+                  handleAddWeekday("Friday");
+                }}
+              />
+              <label className="ml-2">Friday</label>
+            </div>
+            <div className="flex flex-row items-center">
+              <input
+                type="checkbox"
+                checked={daysOfWeek.Saturday || false}
+                className="form-checkbox"
+                onChange={() => {
+                  handleAddWeekday("Saturday");
+                }}
+              />
+              <label className="ml-2">Saturday </label>
+            </div>
+            <div className="flex flex-row items-center">
+              <input
+                type="checkbox"
+                checked={daysOfWeek.Sunday || false}
+                className="form-checkbox"
+                onChange={() => {
+                  handleAddWeekday("Sunday");
+                }}
+              />
+              <label className="ml-2">Sunday</label>
             </div>
           </div>
-        ) : (
-          <>
-            <h2 className="text-2xl p-3 text-center w-full">
-              Edit {workout?.name || "Workout"}
-            </h2>
-            <div className="flex flex-col w-full md:w-6/12 p-3">
-              <label className="text-xl">Workout Name</label>
-              <input
-                type="text"
-                value={workoutName || ""}
-                onChange={handleWorkoutNameChange}
-                className="bg-white p-3 border-white rounded focus-visible:outline-slate-400"
-              />
-              {invalidWorkoutName && (
-                <p className="text-red-500">Please enter a workout name</p>
-              )}
-            </div>
+          {invalidDaysOfWeek && (
+            <p className="text-red-500">Please select at least one day</p>
+          )}
+        </div>
 
-            {/* Select days of week */}
-            <div className="flex flex-col w-full md:w-6/12 p-3">
-              <label className="text-xl">Select Days of Week</label>
-              {/* setup a 3 by 3 grid for each checkbox */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="flex flex-row items-center">
-                  <input
-                    type="checkbox"
-                    checked={daysOfWeek.Monday || false}
-                    className="form-checkbox"
-                    onChange={() => {
-                      handleAddWeekday("Monday");
-                    }}
-                  />
-                  <label className="ml-2">Monday</label>
-                </div>
-                <div className="flex flex-row items-center">
-                  <input
-                    type="checkbox"
-                    checked={daysOfWeek.Tuesday || false}
-                    className="form-checkbox"
-                    onChange={() => {
-                      handleAddWeekday("Tuesday");
-                    }}
-                  />
-                  <label className="ml-2">Tuesday</label>
-                </div>
-                <div className="flex flex-row items-center">
-                  <input
-                    type="checkbox"
-                    checked={daysOfWeek.Wednesday || false}
-                    className="form-checkbox"
-                    onChange={() => {
-                      handleAddWeekday("Wednesday");
-                    }}
-                  />
-                  <label className="ml-2">Wednesday</label>
-                </div>
-                <div className="flex flex-row items-center">
-                  <input
-                    type="checkbox"
-                    checked={daysOfWeek.Thursday || false}
-                    className="form-checkbox"
-                    onChange={() => {
-                      handleAddWeekday("Thursday");
-                    }}
-                  />
-                  <label className="ml-2">Thursday</label>
-                </div>
-                <div className="flex flex-row items-center">
-                  <input
-                    type="checkbox"
-                    checked={daysOfWeek.Friday || false}
-                    className="form-checkbox"
-                    onChange={() => {
-                      handleAddWeekday("Friday");
-                    }}
-                  />
-                  <label className="ml-2">Friday</label>
-                </div>
-                <div className="flex flex-row items-center">
-                  <input
-                    type="checkbox"
-                    checked={daysOfWeek.Saturday || false}
-                    className="form-checkbox"
-                    onChange={() => {
-                      handleAddWeekday("Saturday");
-                    }}
-                  />
-                  <label className="ml-2">Saturday </label>
-                </div>
-                <div className="flex flex-row items-center">
-                  <input
-                    type="checkbox"
-                    checked={daysOfWeek.Sunday || false}
-                    className="form-checkbox"
-                    onChange={() => {
-                      handleAddWeekday("Sunday");
-                    }}
-                  />
-                  <label className="ml-2">Sunday</label>
-                </div>
-              </div>
-              {invalidDaysOfWeek && (
-                <p className="text-red-500">Please select at least one day</p>
-              )}
-            </div>
+        {/* Select Workout */}
+        <div className="flex flex-col w-full md:w-6/12 p-3">
+          <ExerciseSelect
+            exerciseSelections={workoutExercises}
+            onLoaded={() => {
+              setWorkoutLoaded(true);
+            }}
+            onChange={(selections) => {
+              setExercises(selections);
+            }}
+            // For some reason, I get an infinite loop if I set exercises to an empty array... I'm sure there is a good React reason for this
+            onEmpty={() => {
+              if (exercises.length > 0) {
+                setExercises([]);
+              }
+            }}
+          />
+        </div>
 
-            {/* Select Workout */}
-            <div className="flex flex-col w-full md:w-6/12 p-3">
-              <label className="text-xl">Select Exercises</label>
-              {exercises.map((exercise, i) => (
-                <div key={i} className="flex flex-row justify-between my-1">
-                  {/* TODO: FIXME: This needs re-thinking. It pings the api for each element */}
-                  {/* And doesn't work with loaded state. */}
-                  <SelectWorkout
-                    onSelected={(selection) => {
-                      exercises[i] = selection;
-                      setInvalidExercise(false);
-                    }}
-                    currentSelection={exercise.id}
-                  />
-                  <button
-                    className="bg-white rounded p-3 ml-3"
-                    onClick={() => handleRemoveExercise(i)}
-                  >
-                    <TrashIcon className="w-8 h-8" />
-                  </button>
-                </div>
-              ))}
-              {invalidExercise && (
-                <p className="text-red-500">
-                  Please select at least one exercise
-                </p>
-              )}
-            </div>
-
-            {/* Add workout button */}
-            <div className="flex flex-col w-full md:w-6/12 p-3 items-center">
-              <button
-                onClick={() => {
-                  setExercises([...exercises, { name: "", id: NaN }]);
-                }}
-                className="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Add Exercise
-              </button>
-            </div>
-
-            {/* Submit button */}
-            <div className="flex flex-col w-full md:w-6/12 p-3 items-center">
-              <button
-                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => {
-                  submitWorkout();
-                }}
-              >
-                Save Workout
-              </button>
-            </div>
-          </>
-        )}
+        {/* Submit button */}
+        <div className="flex flex-col w-full md:w-6/12 p-3 items-center">
+          <button
+            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => {
+              submitWorkout();
+            }}
+          >
+            Save Workout
+          </button>
+        </div>
       </div>
     </Layout>
   );
