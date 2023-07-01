@@ -76,6 +76,8 @@ export const authOptions = {
   callbacks: {
     async session({
       session,
+      // We disable this line since authOptions requires it but we don't use it.
+      // eslint-disable-next-line
       user,
       token,
     }: unknown) {
