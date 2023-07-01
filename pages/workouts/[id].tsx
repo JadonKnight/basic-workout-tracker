@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import hashId from "@/lib/hashid";
 import { maskDaysOfWeek, unmaskDaysOfWeek } from "@/lib/day-bitmask";
 import ExerciseSelect from "@/components/exercise-selection";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import type { Session } from "next-auth";
@@ -15,11 +17,11 @@ import type {
   WorkoutSubmission,
 } from "@/types/types";
 
-// TODO: Implement back button and api
 export default function Workout({ session }: { session: Session }) {
   // Loaded Workout data
   const router = useRouter();
   const { id } = router.query;
+
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [workoutLoaded, setWorkoutLoaded] = useState<boolean>(false);
   const [workoutExercises, setWorkoutExercises] = useState<ExerciseSelection[]>(
@@ -93,16 +95,19 @@ export default function Workout({ session }: { session: Session }) {
       body: JSON.stringify(data),
     });
 
-    // // TODO: Fix this - I need a protocol for handling errors
     if (!response.ok && response.status >= 500) {
-      // Router.push("/500");
+      router.push("/500");
       console.error("Server error");
     } else if (!response.ok) {
-      // Router.push("/400");
+      router.push("/400");
       console.error("Client error");
     }
 
-    // Router.push("/");
+    // Show a toast notification when the workout is updated
+    toast.success("Workout updated successfully!", {
+      position: "top-right",
+      autoClose: 2000,
+    });
   };
 
   const handleWorkoutNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,6 +122,7 @@ export default function Workout({ session }: { session: Session }) {
 
   return (
     <Layout session={session}>
+      <ToastContainer />
       <div
         className={`${
           !workoutLoaded ? "flex" : "hidden"

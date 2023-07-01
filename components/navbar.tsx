@@ -5,22 +5,32 @@ import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
 import type { Session } from "next-auth";
+import { useRouter } from "next/router";
 interface NavLinks {
   name: string;
   href: string;
   current: boolean;
 }
 
-const navigation: NavLinks[] = [
-  // { name: "Home", href: "/", current: true },
-  // { name: "Past Workouts", href: "#", current: false },
-];
-
 function classNames(...classes: string[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Navbar({ session }: { session: Session | null }) {
+  const router = useRouter();
+
+  const navigation: NavLinks[] = [
+    {
+      name: "Workouts",
+      href: "/workouts",
+      current: router.pathname === "/workouts",
+    },
+    {
+      name: "New Workout",
+      href: "/workouts/new",
+      current: router.pathname === "/workouts/new",
+    },
+  ];
   return (
     <Popover as="nav" className="bg-gray-800">
       {({ open }) => (

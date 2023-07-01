@@ -72,7 +72,7 @@ export default function WorkoutList({
                 items={[
                   {
                     name: "Edit",
-                    href: `/workout/${workout.id}`,
+                    href: `/workouts/${workout.id}`,
                     icon: <PencilIcon className="w-4 h-4" />,
                   },
                   {

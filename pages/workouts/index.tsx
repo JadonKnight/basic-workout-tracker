@@ -25,7 +25,7 @@ export default function WorkoutPage({ session }: { session: Session }) {
     <Layout session={session}>
       <div className="flex w-full justify-center">
         <div className="flex flex-col w-full md:w-6/12 p-3 items-center">
-          <h2 className="text-2xl p-3 text-start w-full">
+          <h2 className="text-2xl p-3 text-center w-full">
             Your Workouts
           </h2>
         </div>
@@ -56,6 +56,6 @@ export async function getServerSideProps(
   return {
     props: {
       session,
-    },
+    }
   };
 }

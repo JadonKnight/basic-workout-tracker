@@ -19,19 +19,19 @@ export default function Dashboard({ session }: { session: Session }) {
             </p>
             <div className="md:space-x-4 space-y-4 md:space-y-0 px-4 flex justify-center flex-col md:flex-row">
               <Link
-                href="/workout/new"
+                href="/workouts/new"
                 className="bg-white text-blue-500 hover:bg-blue-600 hover:text-white px-6 py-3 rounded-md font-semibold"
               >
                 Create New Workout
               </Link>
               <Link
-                href="/workout"
+                href="/workouts"
                 className="bg-white text-green-500 hover:bg-green-600 hover:text-white px-6 py-3 rounded-md font-semibold"
               >
                 Your Workouts
               </Link>
               <Link
-                href="/workout/statistics"
+                href="/workouts/statistics"
                 className="bg-white text-indigo-500 hover:bg-indigo-600 hover:text-white px-6 py-3 rounded-md font-semibold"
               >
                 Stats
