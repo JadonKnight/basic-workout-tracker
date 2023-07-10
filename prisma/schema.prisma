@@ -32,13 +32,13 @@ model Profile {
 }
 
 model Exercise {
-  id              Int              @id @default(autoincrement())
-  name            String           @unique
-  description     String?          @default("")
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @default(now())
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  description     String?           @default("")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now())
   workoutExercise WorkoutExercise[]
-  createdBy       User?            @relation(fields: [createdById], references: [id])
+  createdBy       User?             @relation(fields: [createdById], references: [id])
   createdById     Int?
 }
 
@@ -50,11 +50,12 @@ model Workout {
   name            String            @default("")
   userId          Int
   user            User              @relation(fields: [userId], references: [id])
-  daysOfWeek      Int               // NOTE: This is a bitmask of the days of the week with Sunday being 1 and Saturday being 64
+  daysOfWeek      Int // NOTE: This is a bitmask of the days of the week with Sunday being 1 and Saturday being 64
   workoutExercise WorkoutExercise[]
+  WorkoutSession  WorkoutSession[]
 }
 
-model Set {
+model WorkoutSet {
   id                Int             @id @default(autoincrement())
   reps              Int
   weight            Int
@@ -64,6 +65,8 @@ model Set {
   updatedAt         DateTime        @default(now())
   workoutExerciseId Int
   workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id])
+  workoutSessionId  Int
+  workoutSession    WorkoutSession  @relation(fields: [workoutSessionId], references: [id])
 }
 
 model WorkoutExercise {
@@ -72,5 +75,15 @@ model WorkoutExercise {
   exerciseId Int
   workout    Workout  @relation(fields: [workoutId], references: [id])
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
-  sets       Set[]
+  sets       WorkoutSet[]
+}
+
+model WorkoutSession {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  startedAt DateTime?
+  endedAt   DateTime?
+  workoutId Int
+  workout   Workout   @relation(fields: [workoutId], references: [id])
+  sets      WorkoutSet[]
 }
