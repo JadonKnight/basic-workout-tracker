@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import hashId from "@/lib/hashid";
 import TrackSets from "@/components/track-sets";
+import AlertOnUnload from "@/components/AlertOnUnload";
 
 export default function PerformWorkout({ session }: { session: Session }) {
   const router = useRouter();
@@ -46,6 +47,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
 
   return (
     <Layout session={session}>
+      <AlertOnUnload />
       <div className={`${"flex"} flex-col flex-grow-1 items-center`}>
         <h2 className="text-2xl p-3 text-center w-full">
           Perform {workoutName}
