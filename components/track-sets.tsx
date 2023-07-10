@@ -47,7 +47,8 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
               />
             </label>
             <label className="flex flex-col">
-              <span className="text-sm sm:text-base">
+              <span className="flex items-center text-sm sm:text-base">
+                <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
                 {window.innerWidth < 640 ? "WI" : "Working Interval"}
               </span>
               <input
@@ -63,7 +64,8 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
               />
             </label>
             <label className="flex flex-col">
-              <span className="text-sm sm:text-base">
+              <span className="flex items-center text-sm sm:text-base">
+                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
                 {window.innerWidth < 640 ? "RI" : "Rest Interval"}
               </span>
               <input
@@ -106,7 +108,8 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
             />
           </label>
           <label className="flex flex-col">
-            <span className="text-sm sm:text-base">
+            <span className="flex items-center text-sm sm:text-base">
+              <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
               {window.innerWidth < 640 ? "WI" : "Working Interval"}
             </span>
             <input
@@ -123,7 +126,8 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
             />
           </label>
           <label className="flex flex-col">
-            <span className="text-sm sm:text-base">
+            <span className="flex items-center text-sm sm:text-base">
+              <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
               {window.innerWidth < 640 ? "RI" : "Rest Interval"}
             </span>
             <input

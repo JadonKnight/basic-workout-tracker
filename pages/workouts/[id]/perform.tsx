@@ -51,6 +51,17 @@ export default function PerformWorkout({ session }: { session: Session }) {
           Perform {workoutName}
         </h2>
         <div className="flex flex-col w-full md:w-6/12 p-3">
+          {/* Legend to show WI and RI */}
+          <div className="flex flex-col justify-between sm:hidden">
+            <div className="flex items-center">
+              <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
+              <span>WI = Working Interval</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+              <span>RI = Rest Interval</span>
+            </div>
+          </div>
           <ul>
             {exercises.map((exercise) => (
               <li key={exercise.id}>
