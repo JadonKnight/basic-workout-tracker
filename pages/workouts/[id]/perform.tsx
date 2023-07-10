@@ -16,6 +16,12 @@ export default function PerformWorkout({ session }: { session: Session }) {
 
   const [exercises, setExercises] = useState<ExerciseSelection[]>([]);
   const [workoutName, setWorkoutName] = useState<string | null>("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+
+  const finishWorkout = async () => {
+    console.log("Finished workout");
+  };
 
   // Fetch workout data based on the id and perform any necessary logic
   useEffect(() => {
@@ -45,6 +51,12 @@ export default function PerformWorkout({ session }: { session: Session }) {
     fetchWorkout();
   }, [id, router]);
 
+  // Set the start date and time
+  useEffect(() => {
+    setStartDate(new Date());
+    setStartTime(new Date());
+  }, []);
+
   return (
     <Layout session={session}>
       <AlertOnUnload />
@@ -53,15 +65,27 @@ export default function PerformWorkout({ session }: { session: Session }) {
           Perform {workoutName}
         </h2>
         <div className="flex flex-col w-full md:w-6/12 p-3">
-          {/* Legend to show WI and RI */}
-          <div className="flex flex-col justify-between sm:hidden">
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
-              <span>WI = Working Interval</span>
+          <div className="flex flex-row justify-between">
+            <div className="flex flex-col justify-between sm:hidden">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
+                <span>WI = Working Interval</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                <span>RI = Rest Interval</span>
+              </div>
             </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-              <span>RI = Rest Interval</span>
+            {/* Add a date and time */}
+            <div className="flex flex-col">
+              <span className="text-sm">
+                Date:{" "}
+                {startDate?.toLocaleString("en-US", { dateStyle: "short" })}
+              </span>
+              <span className="text-sm">
+                Time:{" "}
+                {startTime?.toLocaleString("en-US", { timeStyle: "short" })}
+              </span>
             </div>
           </div>
           <ul>
@@ -71,6 +95,15 @@ export default function PerformWorkout({ session }: { session: Session }) {
               </li>
             ))}
           </ul>
+          {/* Finish Workout */}
+          <div className="flex flex-row justify-start">
+            <button
+              className="w-full md:w-fit bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded mt-4"
+              onClick={finishWorkout}
+            >
+              Finish Workout
+            </button>
+          </div>
         </div>
       </div>
     </Layout>
