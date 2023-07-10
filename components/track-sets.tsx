@@ -36,7 +36,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
               <span className="text-sm sm:text-base">Weight</span>
               <input
                 type="number"
-                className="rounded p-2 border-black border"
+                className="black-input"
                 placeholder="(kg)"
                 value={rep.weight || ""}
                 onChange={(e) => {
@@ -52,7 +52,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
               </span>
               <input
                 type="number"
-                className="rounded p-2 border-black border"
+                className="black-input"
                 placeholder="(s)"
                 value={rep.workingInterval || ""}
                 onChange={(e) => {
@@ -68,7 +68,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
               </span>
               <input
                 type="number"
-                className="rounded p-2 border-black border"
+                className="black-input"
                 placeholder="(s)"
                 value={rep.restInterval || ""}
                 onChange={(e) => {
@@ -94,7 +94,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
             <span className="text-sm sm:text-base">Weight</span>
             <input
               type="number"
-              className="rounded p-2 border-black border"
+              className="black-input"
               value={currentRep.weight || ""}
               placeholder="(kg)"
               onChange={(e) => {
@@ -111,7 +111,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
             </span>
             <input
               type="number"
-              className="rounded p-2 border-black border"
+              className="black-input"
               value={currentRep.workingInterval || ""}
               placeholder="(s)"
               onChange={(e) => {
@@ -128,7 +128,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
             </span>
             <input
               type="number"
-              className="rounded p-2 border-black border"
+              className="black-input"
               value={currentRep.restInterval || ""}
               placeholder="(s)"
               onChange={(e) => {
