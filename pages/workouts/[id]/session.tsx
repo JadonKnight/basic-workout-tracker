@@ -8,16 +8,19 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import hashId from "@/lib/hashid";
 import TrackSets from "@/components/track-sets";
-import AlertOnUnload from "@/components/AlertOnUnload";
+import AlertOnUnload from "@/components/alert-on-unload";
+import AlertModal from "@/components/alert-modal";
 
-interface Rep {
+// FIXME: Fix this shit, these are sets not reps fuck my god damn life.
+interface Set {
   weight: number;
+  reps: number;
   workingInterval: number;
   restInterval: number;
 }
 
-interface ExerciseSets {
-  [key: string]: Rep[];
+interface WorkoutSets {
+  [key: string]: Set[];
 }
 
 export default function PerformWorkout({ session }: { session: Session }) {
@@ -26,14 +29,49 @@ export default function PerformWorkout({ session }: { session: Session }) {
 
   const [exercises, setExercises] = useState<ExerciseSelection[]>([]);
   const [workoutName, setWorkoutName] = useState<string | null>("");
-  const [startDate, setStartDate] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [exerciseSets, setExerciseSets] = useState<ExerciseSets>({});
+  const [workoutSets, setWorkoutSets] = useState<WorkoutSets>({});
 
   const [hasInput, setHasInput] = useState<boolean>(false);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
 
   const finishWorkout = async () => {
-    console.log("Finished workout");
+    // If exercise sets is empty, just redirect to the workout page
+    if (
+      Object.values(workoutSets).filter((set) => set.length > 0).length === 0
+    ) {
+      // Set hasInput to false so the alert doesn't show up
+      setShowAlert(false);
+      setHasInput(false);
+      // FIXME: Using the hasInput flashes the fucking alert with a different screen
+      // Wow does front end really suck ball sacks
+      router.push("/workouts");
+      return;
+    }
+
+    const response = await fetch(`/api/workouts/${id}/session`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        startTime,
+        endTime: new Date(),
+        workoutSets,
+      }),
+    });
+
+    if (!response.ok) {
+      // Push to 400 or 500 depending on response code
+      if (response.status < 500 && response.status >= 400) {
+        router.push("/400");
+      } else {
+        router.push("/500");
+      }
+    }
+
+    console.log(await response.json());
   };
 
   // Fetch workout data based on the id and perform any necessary logic
@@ -66,20 +104,37 @@ export default function PerformWorkout({ session }: { session: Session }) {
 
   // Set the start date and time
   useEffect(() => {
-    setStartDate(new Date());
     setStartTime(new Date());
   }, []);
-
 
   // TODO: Remove this
   // Could probably use a unit or integration test
   useEffect(() => {
-    console.log(exerciseSets);
-  }, [exerciseSets]);
+    console.log(workoutSets);
+  }, [workoutSets]);
+
+  // Check if there is any input
+  const validWorkout = () => {
+    return !(
+      Object.values(workoutSets).filter((set) => set.length > 0).length === 0
+    );
+  };
 
   return (
     <Layout session={session}>
       <AlertOnUnload changed={hasInput} />
+      <AlertModal
+        title={validWorkout() ? "Finish Workout" : "Abandon Workout"}
+        description={
+          validWorkout()
+            ? "Are you sure you want to finish this workout?"
+            : "You have not entered any data for this workout. Are you sure you want to abandon it?"
+        }
+        onConfirm={finishWorkout}
+        onCancel={() => setShowAlert(false)}
+        type={validWorkout() ? "question" : "warning"}
+        active={showAlert}
+      />
       <div className={`${"flex"} flex-col flex-grow-1 items-center`}>
         <h2 className="text-2xl p-3 text-center w-full">
           Perform {workoutName}
@@ -100,10 +155,10 @@ export default function PerformWorkout({ session }: { session: Session }) {
             <div className="flex flex-col">
               <span className="text-sm">
                 Date:{" "}
-                {startDate?.toLocaleString("en-US", { dateStyle: "short" })}
+                {startTime?.toLocaleString("en-US", { dateStyle: "short" })}
               </span>
               <span className="text-sm">
-                Time:{" "}
+                Start Time:{" "}
                 {startTime?.toLocaleString("en-US", { timeStyle: "short" })}
               </span>
             </div>
@@ -114,7 +169,9 @@ export default function PerformWorkout({ session }: { session: Session }) {
                 <TrackSets
                   exerciseName={exercise.name}
                   onUpdate={(sets) => {
-                    setExerciseSets((prev) => {
+                    // Filter out empty sets (empty means no weight)
+                    sets = sets.filter((set) => set.weight !== 0);
+                    setWorkoutSets((prev) => {
                       return {
                         ...prev,
                         [exercise.id]: sets,
@@ -130,7 +187,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
           <div className="flex flex-row justify-start">
             <button
               className="w-full md:w-fit bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded mt-4"
-              onClick={finishWorkout}
+              onClick={() => setShowAlert(true)}
             >
               Finish Workout
             </button>
