@@ -70,6 +70,13 @@ export default function PerformWorkout({ session }: { session: Session }) {
     setStartTime(new Date());
   }, []);
 
+
+  // TODO: Remove this
+  // Could probably use a unit or integration test
+  useEffect(() => {
+    console.log(exerciseSets);
+  }, [exerciseSets]);
+
   return (
     <Layout session={session}>
       <AlertOnUnload changed={hasInput} />
