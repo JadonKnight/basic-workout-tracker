@@ -5,6 +5,7 @@ import { unmaskDaysOfWeek } from "@/lib/day-bitmask";
 import { useState, useEffect } from "react";
 import AlertModal from "@/components/alert-modal";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 interface AlertableWorkout extends Workout {
   alert?: boolean;
@@ -59,8 +60,7 @@ export default function WorkoutList({
                     return { ...workout, alert: false };
                   }
                   return _workout;
-                }
-                )
+                })
               );
             }}
             active={workout.alert || false}
@@ -84,8 +84,7 @@ export default function WorkoutList({
                             return { ...workout, alert: true };
                           }
                           return _workout;
-                        }
-                        )
+                        })
                       );
                     },
                     icon: <TrashIcon className="w-4 h-4" />,
@@ -112,9 +111,12 @@ export default function WorkoutList({
               )}
             </div>
             <div className="mt-4">
-              <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+              <Link
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+                href={`/workouts/${workout.id}/session`}
+              >
                 Start Workout
-              </button>
+              </Link>
             </div>
           </div>
         </li>

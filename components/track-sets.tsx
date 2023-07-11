@@ -50,7 +50,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
       <h3 className="text-xl my-2">{exerciseName}</h3>
 
       {/* Display any existing reps */}
-      {prevSets.map((rep, index) => (
+      {prevSets.map((set, index) => (
         <div className="flex flex-col my-2" key={index}>
           <div className="flex justify-end">
             <span className="w-fit items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
@@ -64,7 +64,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                 type="number"
                 className="black-input"
                 placeholder="(kg)"
-                value={rep.weight || ""}
+                value={set.weight || ""}
                 onChange={(e) => {
                   const newPrevSets = [...prevSets];
                   newPrevSets[index].weight = Number(e.target.value);
@@ -79,10 +79,10 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                 type="number"
                 className="black-input"
                 placeholder="(num)"
-                value={rep.weight || ""}
+                value={set.reps || ""}
                 onChange={(e) => {
                   const newPrevSets = [...prevSets];
-                  newPrevSets[index].weight = Number(e.target.value);
+                  newPrevSets[index].reps = Number(e.target.value);
                   onPrevUpdate(newPrevSets);
                 }}
               />
@@ -97,7 +97,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                 type="number"
                 className="black-input"
                 placeholder="(s)"
-                value={rep.workingInterval || ""}
+                value={set.workingInterval || ""}
                 onChange={(e) => {
                   const newPrevSets = [...prevSets];
                   newPrevSets[index].workingInterval = Number(e.target.value);
@@ -114,7 +114,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                 type="number"
                 className="black-input"
                 placeholder="(s)"
-                value={rep.restInterval || ""}
+                value={set.restInterval || ""}
                 onChange={(e) => {
                   const newPrevSets = [...prevSets];
                   newPrevSets[index].restInterval = Number(e.target.value);
@@ -211,7 +211,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
         className="w-full md:w-fit bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded mt-2"
         onClick={() => {
           // Don't add empty reps
-          if (currentSet.weight === 0) return;
+          if (currentSet.weight === 0 && currentSet.reps === 0) return;
 
           setPrevSets([...prevSets, currentSet]);
           setCurrentSet({

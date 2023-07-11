@@ -8,6 +8,8 @@ import hashId from "@/lib/hashid";
 import z from "zod";
 import { workoutSubmissionSchema } from "@/types/schemas";
 
+// TODO: After the prototype is up and running, I want to refactor and improve this backend
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -109,6 +111,7 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
       name: true,
       workoutExercise: {
         select: {
+          id: true,
           exercise: {
             select: {
               name: true,
@@ -129,11 +132,11 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
     name: workout.name,
     daysOfWeek: workout.daysOfWeek,
     // Probably not a good way to do it... oh well.
-    exercises: workout.workoutExercise.map((exercise) => {
+    exercises: workout.workoutExercise.map((_workoutExercise) => {
       return {
-        name: exercise.exercise.name,
-        description: exercise.exercise.description,
-        id: hashId.encode(exercise.exercise.id)
+        name: _workoutExercise.exercise.name,
+        description: _workoutExercise.exercise.description,
+        id: hashId.encode(_workoutExercise.id)
       };
     }),
     id: hashId.encode(workout.id)

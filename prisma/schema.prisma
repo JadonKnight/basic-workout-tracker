@@ -66,7 +66,7 @@ model WorkoutSet {
   workoutExerciseId Int
   workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id])
   workoutSessionId  Int
-  workoutSession    WorkoutSession  @relation(fields: [workoutSessionId], references: [id])
+  workoutSession    WorkoutSession  @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
 }
 
 model WorkoutExercise {

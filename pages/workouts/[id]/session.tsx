@@ -10,8 +10,8 @@ import hashId from "@/lib/hashid";
 import TrackSets from "@/components/track-sets";
 import AlertOnUnload from "@/components/alert-on-unload";
 import AlertModal from "@/components/alert-modal";
+import Loader from "@/components/loader";
 
-// FIXME: Fix this shit, these are sets not reps fuck my god damn life.
 interface Set {
   weight: number;
   reps: number;
@@ -31,6 +31,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
   const [workoutName, setWorkoutName] = useState<string | null>("");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [workoutSets, setWorkoutSets] = useState<WorkoutSets>({});
+  const [loaded, setLoaded] = useState<boolean>(false);
 
   const [hasInput, setHasInput] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -43,8 +44,6 @@ export default function PerformWorkout({ session }: { session: Session }) {
       // Set hasInput to false so the alert doesn't show up
       setShowAlert(false);
       setHasInput(false);
-      // FIXME: Using the hasInput flashes the fucking alert with a different screen
-      // Wow does front end really suck ball sacks
       router.push("/workouts");
       return;
     }
@@ -70,8 +69,6 @@ export default function PerformWorkout({ session }: { session: Session }) {
         router.push("/500");
       }
     }
-
-    console.log(await response.json());
   };
 
   // Fetch workout data based on the id and perform any necessary logic
@@ -98,6 +95,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
           };
         })
       );
+      setLoaded(true);
     };
     fetchWorkout();
   }, [id, router]);
@@ -106,12 +104,6 @@ export default function PerformWorkout({ session }: { session: Session }) {
   useEffect(() => {
     setStartTime(new Date());
   }, []);
-
-  // TODO: Remove this
-  // Could probably use a unit or integration test
-  useEffect(() => {
-    console.log(workoutSets);
-  }, [workoutSets]);
 
   // Check if there is any input
   const validWorkout = () => {
@@ -122,78 +114,80 @@ export default function PerformWorkout({ session }: { session: Session }) {
 
   return (
     <Layout session={session}>
-      <AlertOnUnload changed={hasInput} />
-      <AlertModal
-        title={validWorkout() ? "Finish Workout" : "Abandon Workout"}
-        description={
-          validWorkout()
-            ? "Are you sure you want to finish this workout?"
-            : "You have not entered any data for this workout. Are you sure you want to abandon it?"
-        }
-        onConfirm={finishWorkout}
-        onCancel={() => setShowAlert(false)}
-        type={validWorkout() ? "question" : "warning"}
-        active={showAlert}
-      />
-      <div className={`${"flex"} flex-col flex-grow-1 items-center`}>
-        <h2 className="text-2xl p-3 text-center w-full">
-          Perform {workoutName}
-        </h2>
-        <div className="flex flex-col w-full md:w-6/12 p-3">
-          <div className="flex flex-row justify-between">
-            <div className="flex flex-col justify-between sm:hidden">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
-                <span>WI = Working Interval</span>
+      <Loader active={!loaded}>
+        <AlertOnUnload changed={hasInput} />
+        <AlertModal
+          title={validWorkout() ? "Finish Workout" : "Abandon Workout"}
+          description={
+            validWorkout()
+              ? "Are you sure you want to finish this workout?"
+              : "You have not entered any data for this workout. Are you sure you want to abandon it?"
+          }
+          onConfirm={finishWorkout}
+          onCancel={() => setShowAlert(false)}
+          type={validWorkout() ? "question" : "warning"}
+          active={showAlert}
+        />
+        <div className={`${"flex"} flex-col flex-grow-1 items-center`}>
+          <h2 className="text-2xl p-3 text-center w-full">
+            Perform {workoutName}
+          </h2>
+          <div className="flex flex-col w-full md:w-6/12 p-3">
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-col justify-between sm:hidden">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
+                  <span>WI = Working Interval</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                  <span>RI = Rest Interval</span>
+                </div>
               </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                <span>RI = Rest Interval</span>
+              {/* Add a date and time */}
+              <div className="flex flex-col">
+                <span className="text-sm">
+                  Date:{" "}
+                  {startTime?.toLocaleString("en-US", { dateStyle: "short" })}
+                </span>
+                <span className="text-sm">
+                  Start Time:{" "}
+                  {startTime?.toLocaleString("en-US", { timeStyle: "short" })}
+                </span>
               </div>
             </div>
-            {/* Add a date and time */}
-            <div className="flex flex-col">
-              <span className="text-sm">
-                Date:{" "}
-                {startTime?.toLocaleString("en-US", { dateStyle: "short" })}
-              </span>
-              <span className="text-sm">
-                Start Time:{" "}
-                {startTime?.toLocaleString("en-US", { timeStyle: "short" })}
-              </span>
+            <ul>
+              {exercises.map((exercise) => (
+                <li key={exercise.id}>
+                  <TrackSets
+                    exerciseName={exercise.name}
+                    onUpdate={(sets) => {
+                      // Filter out empty sets (empty means no weight)
+                      sets = sets.filter((set) => set.weight !== 0);
+                      setWorkoutSets((prev) => {
+                        return {
+                          ...prev,
+                          [exercise.id]: sets,
+                        };
+                      });
+                      setHasInput(true);
+                    }}
+                  />
+                </li>
+              ))}
+            </ul>
+            {/* Finish Workout */}
+            <div className="flex flex-row justify-start">
+              <button
+                className="w-full md:w-fit bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded mt-4"
+                onClick={() => setShowAlert(true)}
+              >
+                Finish Workout
+              </button>
             </div>
-          </div>
-          <ul>
-            {exercises.map((exercise) => (
-              <li key={exercise.id}>
-                <TrackSets
-                  exerciseName={exercise.name}
-                  onUpdate={(sets) => {
-                    // Filter out empty sets (empty means no weight)
-                    sets = sets.filter((set) => set.weight !== 0);
-                    setWorkoutSets((prev) => {
-                      return {
-                        ...prev,
-                        [exercise.id]: sets,
-                      };
-                    });
-                    setHasInput(true);
-                  }}
-                />
-              </li>
-            ))}
-          </ul>
-          {/* Finish Workout */}
-          <div className="flex flex-row justify-start">
-            <button
-              className="w-full md:w-fit bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded mt-4"
-              onClick={() => setShowAlert(true)}
-            >
-              Finish Workout
-            </button>
           </div>
         </div>
-      </div>
+      </Loader>
     </Layout>
   );
 }
