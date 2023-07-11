@@ -1,21 +1,30 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState, useEffect } from "react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import {
+  ExclamationTriangleIcon,
+  QuestionMarkCircleIcon,
+} from "@heroicons/react/24/outline";
 
 interface AlertModalProps {
   title: string;
   description: string;
   onConfirm: () => void;
+  confirmText?: string;
   onCancel: () => void;
   active: boolean;
+  type?: AlertType;
 }
+
+type AlertType = "question" | "warning";
 
 export default function MyModal({
   title,
   description,
   onConfirm,
+  confirmText,
   onCancel,
   active,
+  type,
 }: AlertModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -60,7 +69,11 @@ export default function MyModal({
             >
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <div className="flex justify-center">
-                  <ExclamationTriangleIcon className="mb-3 h-12 w-12 text-yellow-500" />
+                  {type && type === "question" ? (
+                    <QuestionMarkCircleIcon className="mb-3 h-12 w-12 text-blue-500" />
+                  ) : (
+                    <ExclamationTriangleIcon className="mb-3 h-12 w-12 text-yellow-500" />
+                  )}
                 </div>
                 <Dialog.Title
                   as="h3"
@@ -84,13 +97,17 @@ export default function MyModal({
                   </button>
                   <button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                    className={
+                      type && type === "question"
+                        ? "inline-flex justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
+                        : "inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                    }
                     onClick={() => {
                       onConfirm();
                       closeModal();
                     }}
                   >
-                    Delete
+                    {confirmText ? confirmText : "Confirm"}
                   </button>
                 </div>
               </Dialog.Panel>
