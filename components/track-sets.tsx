@@ -43,6 +43,9 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                   const newReps = [...prevReps];
                   newReps[index].weight = Number(e.target.value);
                   setPrevReps(newReps);
+                  onUpdate?.(
+                    currentRep.weight > 0 ? [...newReps, currentRep] : newReps
+                  );
                 }}
               />
             </label>
@@ -60,6 +63,9 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                   const newReps = [...prevReps];
                   newReps[index].workingInterval = Number(e.target.value);
                   setPrevReps(newReps);
+                  onUpdate?.(
+                    currentRep.weight > 0 ? [...newReps, currentRep] : newReps
+                  );
                 }}
               />
             </label>
@@ -77,6 +83,9 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                   const newReps = [...prevReps];
                   newReps[index].restInterval = Number(e.target.value);
                   setPrevReps(newReps);
+                  onUpdate?.(
+                    currentRep.weight > 0 ? [...newReps, currentRep] : newReps
+                  );
                 }}
               />
             </label>
@@ -104,6 +113,10 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                   ...currentRep,
                   weight: Number(e.target.value),
                 });
+                onUpdate?.([
+                  ...prevReps,
+                  { ...currentRep, weight: Number(e.target.value) },
+                ]);
               }}
             />
           </label>
@@ -122,6 +135,17 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                   ...currentRep,
                   workingInterval: Number(e.target.value),
                 });
+                onUpdate?.(
+                  currentRep.weight > 0
+                    ? [
+                        ...prevReps,
+                        {
+                          ...currentRep,
+                          workingInterval: Number(e.target.value),
+                        },
+                      ]
+                    : prevReps
+                );
               }}
             />
           </label>
@@ -140,6 +164,17 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                   ...currentRep,
                   restInterval: Number(e.target.value),
                 });
+                onUpdate?.(
+                  currentRep.weight > 0
+                    ? [
+                        ...prevReps,
+                        {
+                          ...currentRep,
+                          restInterval: Number(e.target.value),
+                        },
+                      ]
+                    : prevReps
+                );
               }}
             />
           </label>
@@ -158,9 +193,6 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
             workingInterval: 0,
             restInterval: 0,
           });
-          if (onUpdate) {
-            onUpdate([...prevReps, currentRep]);
-          }
         }}
       >
         Add Rep

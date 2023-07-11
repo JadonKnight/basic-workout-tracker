@@ -10,6 +10,16 @@ import hashId from "@/lib/hashid";
 import TrackSets from "@/components/track-sets";
 import AlertOnUnload from "@/components/AlertOnUnload";
 
+interface Rep {
+  weight: number;
+  workingInterval: number;
+  restInterval: number;
+}
+
+interface ExerciseSets {
+  [key: string]: Rep[];
+}
+
 export default function PerformWorkout({ session }: { session: Session }) {
   const router = useRouter();
   const { id } = router.query;
@@ -18,6 +28,9 @@ export default function PerformWorkout({ session }: { session: Session }) {
   const [workoutName, setWorkoutName] = useState<string | null>("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const [exerciseSets, setExerciseSets] = useState<ExerciseSets>({});
+
+  const [hasInput, setHasInput] = useState<boolean>(false);
 
   const finishWorkout = async () => {
     console.log("Finished workout");
@@ -59,7 +72,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
 
   return (
     <Layout session={session}>
-      <AlertOnUnload />
+      <AlertOnUnload changed={hasInput} />
       <div className={`${"flex"} flex-col flex-grow-1 items-center`}>
         <h2 className="text-2xl p-3 text-center w-full">
           Perform {workoutName}
@@ -91,7 +104,18 @@ export default function PerformWorkout({ session }: { session: Session }) {
           <ul>
             {exercises.map((exercise) => (
               <li key={exercise.id}>
-                <TrackSets exerciseName={exercise.name} />
+                <TrackSets
+                  exerciseName={exercise.name}
+                  onUpdate={(sets) => {
+                    setExerciseSets((prev) => {
+                      return {
+                        ...prev,
+                        [exercise.id]: sets,
+                      };
+                    });
+                    setHasInput(true);
+                  }}
+                />
               </li>
             ))}
           </ul>

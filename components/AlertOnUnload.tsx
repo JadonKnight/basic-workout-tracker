@@ -1,11 +1,14 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-const NavigationWarning = () => {
+const NavigationWarning = ({ changed }: { changed: boolean }) => {
   const Router = useRouter();
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!changed) {
+        return;
+      }
       event.preventDefault();
       // Customize the warning message based on your requirements
       event.returnValue =
@@ -13,6 +16,10 @@ const NavigationWarning = () => {
     };
 
     const handleRouteChange = () => {
+      if (!changed) {
+        return;
+      }
+
       const leave = confirm(
         "Are you sure you want to leave? Your progress may be lost."
       );
@@ -35,7 +42,7 @@ const NavigationWarning = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       Router.events.off("routeChangeStart", handleRouteChange);
     };
-  }, [Router]);
+  }, [Router, changed]);
 
   return null;
 };
