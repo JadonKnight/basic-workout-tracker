@@ -72,7 +72,6 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                 }}
               />
             </label>
-
             <label className="flex flex-col">
               <span className="text-sm sm:text-base">Reps</span>
               <input
@@ -87,7 +86,6 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
                 }}
               />
             </label>
-
             <label className="flex flex-col">
               <span className="flex items-center text-sm sm:text-base">
                 <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
@@ -134,22 +132,22 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
           </span>
         </div>
         <div className="grid grid-cols-4 gap-2">
-          <label className="flex flex-col">
-            <span className="text-sm sm:text-base">Weight</span>
-            <input
-              type="number"
-              className="black-input"
-              value={currentSet.weight || ""}
-              placeholder="(kg)"
-              onChange={(e) => {
-                const newCurrentSet = {
-                  ...currentSet,
-                  weight: Number(e.target.value),
-                };
-                onCurrentUpdate(newCurrentSet);
-              }}
-            />
-          </label>
+            <label className="flex flex-col">
+              <span className="text-sm sm:text-base">Weight</span>
+              <input
+                type="number"
+                className="black-input"
+                value={currentSet.weight || ""}
+                placeholder="(kg)"
+                onChange={(e) => {
+                  const newCurrentSet = {
+                    ...currentSet,
+                    weight: Number(e.target.value),
+                  };
+                  onCurrentUpdate(newCurrentSet);
+                }}
+              />
+            </label>
           <label className="flex flex-col">
             <span className="text-sm sm:text-base">Reps</span>
             <input
@@ -211,7 +209,7 @@ export default function TrackSets({ exerciseName, onUpdate }: TrackSetsProps) {
         className="w-full md:w-fit bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded mt-2"
         onClick={() => {
           // Don't add empty reps
-          if (currentSet.weight === 0 && currentSet.reps === 0) return;
+          if (currentSet.weight === 0 || currentSet.reps === 0) return;
 
           setPrevSets([...prevSets, currentSet]);
           setCurrentSet({

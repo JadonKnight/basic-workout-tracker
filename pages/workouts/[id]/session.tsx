@@ -35,6 +35,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
 
   const [hasInput, setHasInput] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [workoutFinished, setWorkoutFinished] = useState<boolean>(false);
 
   const finishWorkout = async () => {
     // If exercise sets is empty, just redirect to the workout page
@@ -69,7 +70,17 @@ export default function PerformWorkout({ session }: { session: Session }) {
         router.push("/500");
       }
     }
+
+    setHasInput(false);
+    setWorkoutFinished(true);
   };
+
+  // Check if the workout is finished and redirect to the workout page if so
+  useEffect(() => {
+    if (workoutFinished && !hasInput) {
+      router.push("/workouts");
+    }
+  }, [workoutFinished, hasInput, router]);
 
   // Fetch workout data based on the id and perform any necessary logic
   useEffect(() => {
