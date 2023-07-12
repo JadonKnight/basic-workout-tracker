@@ -1,7 +1,7 @@
 import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import type { Session } from "next-auth";
 import type { ExerciseSelection, Workout } from "@/types/types";
-
+import type { SessionData } from "@/pages/api/workouts/[id]/sessions";
 import { getSession } from "next-auth/react";
 import Layout from "@/components/layout";
 import { useRouter } from "next/router";
@@ -32,7 +32,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [workoutSets, setWorkoutSets] = useState<WorkoutSets>({});
   const [loaded, setLoaded] = useState<boolean>(false);
-
+  const [previousWorkouts, setPreviousWorkouts] = useState<WorkoutSets>({});
   const [hasInput, setHasInput] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [workoutFinished, setWorkoutFinished] = useState<boolean>(false);
@@ -49,7 +49,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
       return;
     }
 
-    const response = await fetch(`/api/workouts/${id}/session`, {
+    const response = await fetch(`/api/workouts/${id}/sessions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -87,6 +87,9 @@ export default function PerformWorkout({ session }: { session: Session }) {
     const fetchWorkout = async () => {
       const response = await fetch(`/api/workouts/${id}`);
 
+      // TODO: We need to direct this to the useEffect in the same
+      // way we do when the workout finishes
+      // otherwise the beforeunload event will block the redirect
       if (!response.ok) {
         // Push to 400 or 500 depending on response code
         if (response.status < 500 && response.status >= 400) {
@@ -94,6 +97,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
         } else {
           router.push("/500");
         }
+        return;
       }
 
       const data: Workout = await response.json();
@@ -102,13 +106,61 @@ export default function PerformWorkout({ session }: { session: Session }) {
         data.exercises.map((exercise) => {
           return {
             name: exercise.name,
-            id: Number(hashId.decode(exercise.id)),
+            id: Number(hashId.decode(exercise.workoutExerciseId)),
           };
         })
       );
+    };
+
+    const fetchPreviousSessions = async () => {
+      const response = await fetch(`/api/workouts/${id}/sessions`);
+
+      if (!response.ok) {
+        // Push to 400 or 500 depending on response code
+        if (response.status < 500 && response.status >= 400) {
+          router.push("/400");
+        } else {
+          router.push("/500");
+        }
+        return;
+      }
+
+      const { workoutSessions }: { workoutSessions: SessionData[] } =
+        await response.json();
+
+      if (workoutSessions.length === 0) {
+        setLoaded(true);
+        return;
+      }
+
+      // Sessions defaults to returning the most recent session first
+      // so we can just grab the first one
+      const _previousWorkoutSessions = workoutSessions[0].sets.reduce(
+        (acc, curr) => {
+          const { workoutExercise } = curr;
+          const set = {
+            weight: curr.weight,
+            reps: curr.reps,
+            workingInterval: curr.workingInterval,
+            restInterval: curr.restInterval,
+          };
+          return {
+            ...acc,
+            [workoutExercise.id]: [...(acc[workoutExercise.id] || []), set],
+          };
+        },
+        {} as {
+          [key: string]: Set[];
+        }
+      );
+
+      setPreviousWorkouts(_previousWorkoutSessions);
+      // FIXME: Fix this. This is a hacky way to do it.
       setLoaded(true);
     };
+
     fetchWorkout();
+    fetchPreviousSessions();
   }, [id, router]);
 
   // Set the start date and time
@@ -171,6 +223,7 @@ export default function PerformWorkout({ session }: { session: Session }) {
               {exercises.map((exercise) => (
                 <li key={exercise.id}>
                   <TrackSets
+                    prevSessionSets={previousWorkouts[exercise.id] || []}
                     exerciseName={exercise.name}
                     onUpdate={(sets) => {
                       // Filter out empty sets (empty means no weight)

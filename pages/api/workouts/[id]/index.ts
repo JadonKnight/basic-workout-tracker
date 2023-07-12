@@ -26,8 +26,6 @@ export default async function handler(
   res.status(405).end();
 }
 
-// FIXME: We don't make checks that users own their workouts...
-
 async function DELETE(req: NextApiRequest, res: NextApiResponse) {
   // Get the session
   const session = await getServerSession(req, res, authOptions);
@@ -136,7 +134,8 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
       return {
         name: _workoutExercise.exercise.name,
         description: _workoutExercise.exercise.description,
-        id: hashId.encode(_workoutExercise.id)
+        id: hashId.encode(_workoutExercise.exercise.id),
+        workoutExerciseId: hashId.encode(_workoutExercise.id)
       };
     }),
     id: hashId.encode(workout.id)
