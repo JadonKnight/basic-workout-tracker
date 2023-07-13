@@ -57,7 +57,6 @@ export default function Home({ session }: {session: Session | null}) {
                 <h3 className="text-xl font-semibold mb-2">Track Progress</h3>
                 <p className="text-gray-600">
                   Monitor your progress over time and see how you are improving.
-                  improving.
                 </p>
               </div>
               <div className="md:w-1/3 p-4">
