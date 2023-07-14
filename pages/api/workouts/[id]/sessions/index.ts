@@ -151,6 +151,9 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
 
   const workoutSessions = await prisma.workoutSession.findMany({
     where: {
+      workout: {
+        userId: Number(user.id),
+      },
       workoutId: decodedWorkoutId,
     },
     include: {

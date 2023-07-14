@@ -31,10 +31,10 @@ export default function Dashboard({ session }: { session: Session }) {
                 Your Workouts
               </Link>
               <Link
-                href="/workouts/statistics"
+                href="/history"
                 className="shadow-md bg-white text-indigo-500 hover:bg-indigo-600 hover:text-white px-6 py-3 rounded-md font-semibold"
               >
-                Stats
+                Workout History
               </Link>
             </div>
           </div>
