@@ -11,8 +11,8 @@ export default function History({ session }: { session: Session }) {
   const [workoutSessions, setWorkoutSessions] = useState<SessionData[]>([]);
   const [completedWorkouts, setCompletedWorkouts] = useState<number>(0);
   const [minutesWorkedOut, setMinutesWorkedOut] = useState<number>(0);
-  const [averageSetsPerWorkout, setAverageSetsPerWorkout] = useState<number>(0);
-  const [averageRepsPerWorkout, setAverageRepsPerWorkout] = useState<number>(0);
+  // const [averageSetsPerWorkout, setAverageSetsPerWorkout] = useState<number>(0);
+  // const [averageRepsPerWorkout, setAverageRepsPerWorkout] = useState<number>(0);
 
   useEffect(() => {
     const fetchWorkoutSessions = async () => {

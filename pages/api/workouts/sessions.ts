@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import hashId from "@/lib/hashid";
-import { Workout } from '@prisma/client';
+import { Workout } from "@prisma/client";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
