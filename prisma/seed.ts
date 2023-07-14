@@ -1,5 +1,6 @@
 import prisma from "../lib/prisma";
 import bcrypt from "bcrypt";
+import { faker } from "@faker-js/faker";
 
 async function main() {
   await prisma.profile.upsert({
@@ -78,7 +79,7 @@ async function main() {
     },
   ];
 
-  exercises.forEach(async (exercise) => {
+  for (const exercise of exercises) {
     await prisma.exercise.upsert({
       where: {
         name: exercise.name,
@@ -91,15 +92,130 @@ async function main() {
         createdAt: new Date(),
       },
     });
-  });
+  }
+
+  const dummyAccounts = Array.from({ length: 10 }, () => ({
+    username: faker.internet.userName(),
+    password: faker.internet.password(),
+    name: faker.person.fullName(),
+    email: faker.internet.email(),
+    avatar: "",
+  }));
+
+  for (const account of dummyAccounts) {
+    const profile = await prisma.profile.upsert({
+      where: {
+        email: account.email,
+      },
+      update: {},
+      create: {
+        user: {
+          create: {
+            username: account.username,
+            password: await bcrypt.hash(account.password, 10),
+          },
+        },
+        name: account.name,
+        email: account.email,
+        avatar: account.avatar,
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: profile.userId,
+      },
+    });
+
+    const workouts = [
+      { name: "Chest Day", daysOfWeek: 1 }, // Sunday
+      { name: "Leg Day", daysOfWeek: 32 }, // Wednesday
+      { name: "Back Day", daysOfWeek: 2 }, // Monday
+    ];
+
+    for (const workout of workouts) {
+      if (!user || !user.id) throw new Error("User not found");
+      const createdWorkout = await prisma.workout.create({
+        data: {
+          name: workout.name,
+          daysOfWeek: workout.daysOfWeek,
+          userId: user.id,
+        },
+      });
+
+      // TODO: Create at least 3 exercises for each workout
+      const workoutExercise1 = await prisma.workoutExercise.create({
+        data: {
+          workoutId: createdWorkout.id,
+          exerciseId: 1,
+        },
+      });
+      const workoutExercise2 = await prisma.workoutExercise.create({
+        data: {
+          workoutId: createdWorkout.id,
+          exerciseId: 2,
+        },
+      });
+      const workoutExercise3 = await prisma.workoutExercise.create({
+        data: {
+          workoutId: createdWorkout.id,
+          exerciseId: 3,
+        },
+      });
+
+      const sessionStart = new Date(faker.date.recent());
+      // Generate a random amount of minutes between 15 and 120
+      const sessionDuration = Math.random() * (120 - 15) + 15;
+      const sessionEnd = new Date(sessionStart.getTime() + sessionDuration * 60000);
+
+      const workoutSession = await prisma.workoutSession.create({
+        data: {
+          workoutId: createdWorkout.id,
+          // TODO: Create a random date between 1 and 7 days ago
+          startedAt: sessionStart,
+          endedAt: sessionEnd
+        },
+      });
+
+      // Create at least 3 sets for each exercise for each workout session
+      const workoutSessionExercise = await prisma.workoutSet.createMany({
+        // TODO: Better randomise this.
+        data: [
+          {
+            workoutSessionId: workoutSession.id,
+            workoutExerciseId: workoutExercise1.id,
+            reps: 10,
+            weight: 100,
+            workingInterval: 60,
+            restInterval: 30,
+          },
+          {
+            workoutSessionId: workoutSession.id,
+            workoutExerciseId: workoutExercise2.id,
+            reps: 10,
+            weight: 100,
+            workingInterval: 60,
+            restInterval: 30,
+          },
+          {
+            workoutSessionId: workoutSession.id,
+            workoutExerciseId: workoutExercise3.id,
+            reps: 10,
+            weight: 100,
+            workingInterval: 60,
+            restInterval: 30,
+          },
+        ],
+      });
+    }
+  }
+
+  console.log("The following users have been seeded:", dummyAccounts);
+
+  await prisma.$disconnect();
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
