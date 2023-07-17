@@ -11,7 +11,8 @@
     "todo": "leasot '**/*.{js,jsx,ts,tsx}'",
     "todo-ci": "leasot -x --reporter markdown '**/*.{js,jsx,ts,tsx}' --ignore './db-data','./node_modules' > TODO.md",
     "seed": "npx prisma db seed --preview-feature",
-    "reset-seed": "npx prisma migrate reset"
+    "reset-seed": "npx prisma migrate reset",
+    "start:prod": "npx prisma migrate deploy && npx prisma db seed && node server.js"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

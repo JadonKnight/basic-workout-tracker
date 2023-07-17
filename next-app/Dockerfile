@@ -1,11 +1,8 @@
-# Taken from the official Next.js Docker example
+# Taken from the official Next.js Docker example except we don't use alpine due to issues deploying to pi.
 FROM node:18 AS base
 
 # Step 1. Rebuild the source code only when needed
 FROM base AS builder
-
-# An attempt to fix the openssl errors with prisma and the alpine image: https://github.com/prisma/prisma/issues/16553
-#RUN apk add openssl1.1-compat
 
 WORKDIR /app
 
@@ -20,6 +17,7 @@ RUN \
   else echo "Warning: Lockfile not found. It is recommended to commit lockfiles to version control." && yarn install; \
   fi
 
+# TODO: Re introduce this when we move to /src
 # COPY src ./src
 # COPY public ./public
 # COPY next.config.js .
@@ -41,6 +39,10 @@ ENV NEXT_PUBLIC_ENV_VARIABLE=${NEXT_PUBLIC_ENV_VARIABLE}
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 # Make sure we generate the client to prevent type errors
+# FIXME: I don't think this is ideal either,
+# requires the CI/CD to have database access... (uh oh)
+# Either I fix it by removing here or our CI/CD needs to be able to spin
+# up a database before building the image.
 RUN npx prisma generate
 
 # Build Next.js based on the preferred package manager
@@ -58,11 +60,10 @@ FROM base AS runner
 
 WORKDIR /app
 
-
-# Copy the prisma schema
+# Copy & generate prisma schema TODO: This isn't ideal and we definitely don't
+# want to be running npm install prisma here.
 COPY --from=builder /app/prisma ./prisma
 RUN npm install prisma
-# Generate the prisma schema
 RUN npx prisma generate --schema ./prisma/schema.prisma
 
 # Don't run production as root
@@ -88,7 +89,5 @@ ENV NEXT_PUBLIC_ENV_VARIABLE=${NEXT_PUBLIC_ENV_VARIABLE}
 
 # Note: Don't expose ports here, Compose will handle that for us
 
-# Before running the app, we need to generate the prisma schema
-# This assumes we are using npm. If we are using yarn, we need to change this.
-
-CMD ["node", "server.js"]
+# Run migrate and seed and then start the app
+CMD ["npm", "run", "start:prod"]
