@@ -3,6 +3,7 @@
 # Generate ./next-app/.env file
 cat << EOF > ./next-app/.env
 DATABASE_URL=
+NODE_ENV=
 EOF
 
 # Generate ./next-app/.env.local file

@@ -1,6 +1,6 @@
-import prisma from "../lib/prisma";
+import { PrismaClient } from "@prisma/client";
 
-async function main() {
+export default async function seedExercises(prisma: PrismaClient) {
   const exercises = [
     {
       name: "Bench Press",
@@ -73,10 +73,4 @@ async function main() {
       },
     });
   }
-  await prisma.$disconnect();
 }
-
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
