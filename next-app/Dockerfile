@@ -1,5 +1,5 @@
 # Taken from the official Next.js Docker example except we don't use alpine due to issues deploying to pi.
-FROM node:18 AS base
+FROM node:18-slim AS base
 
 # Step 1. Rebuild the source code only when needed
 FROM base AS builder
@@ -69,6 +69,10 @@ RUN npx prisma generate --schema ./prisma/schema.prisma
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+
+# Take ownership of the app directory
+RUN chown -R nextjs:nodejs /app
+
 USER nextjs
 
 COPY --from=builder /app/public ./public
