@@ -2,13 +2,25 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../lib/prisma";
 import { hash } from "../../lib/password";
 import { Prisma } from "@prisma/client";
+import zod from "zod";
+
+const schema = zod.object({
+  username: zod.string().min(3).max(20),
+  password: zod.string().min(8).max(100),
+  email: zod.string().email(),
+});
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<NextApiResponse | void> {
   if (req.method === "POST") {
-    const { username, password } = req.body;
+    const parsedBody = schema.safeParse(req.body);
+    if (!parsedBody.success) {
+      return res.status(400).json({ error: parsedBody.error.message });
+    }
+
+    const { username, password, email } = req.body;
     const hashedPassword = await hash(password);
 
     try {
@@ -22,7 +34,7 @@ export default async function handler(
             },
           },
           name: "",
-          email: "",
+          email: email,
           avatar: ""
         },
       });
