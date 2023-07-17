@@ -1,12 +1,11 @@
 # Taken from the official Next.js Docker example
-
-FROM node:18-alpine AS base
+FROM node:18 AS base
 
 # Step 1. Rebuild the source code only when needed
 FROM base AS builder
 
 # An attempt to fix the openssl errors with prisma and the alpine image: https://github.com/prisma/prisma/issues/16553
-RUN apk add openssl1.1-compat
+#RUN apk add openssl1.1-compat
 
 WORKDIR /app
 
@@ -40,6 +39,9 @@ ENV NEXT_PUBLIC_ENV_VARIABLE=${NEXT_PUBLIC_ENV_VARIABLE}
 # Next.js collects completely anonymous telemetry data about general usage. Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line to disable telemetry at build time
 # ENV NEXT_TELEMETRY_DISABLED 1
+
+# Make sure we generate the client to prevent type errors
+RUN npx prisma generate
 
 # Build Next.js based on the preferred package manager
 RUN \
