@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Generate ./next-app/.env file
-cat << EOF > .env
+cat << EOF > ./next-app/.env
 DATABASE_URL=
 EOF
 
 # Generate ./next-app/.env.local file
-cat << EOF > .env.local
+cat << EOF > ./next-app/.env.local
 POSTGRES_USER=
 POSTGRES_PASSWORD=
 POSTGRES_DB=
