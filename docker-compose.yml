@@ -1,6 +1,22 @@
 version: "3.9"
 
+# NOTE: This is the prototype prod deployment. Very simple for now, and only for the alpha testing.
 services:
+  next-app:
+    container_name: next-app
+    build:
+      context: ./next-app
+      dockerfile: Dockerfile
+      args:
+        ENV_VARIABLE: ${ENV_VARIABLE}
+        NEXT_PUBLIC_ENV_VARIABLE: ${NEXT_PUBLIC_ENV_VARIABLE}
+    env_file:
+      - ./next-app/.env.local
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - my_network
   db:
     image: 'postgres:15.1-alpine3.17'
     restart: unless-stopped
@@ -10,4 +26,12 @@ services:
     volumes:
       - ./db-data/:/var/lib/postgresql/data/
     env_file:
-      - .env.local
+      - ./next-app/.env.local
+    networks:
+      - my_network
+
+# Define a network, which allows containers to communicate
+# with each other, by using their container name as a hostname
+networks:
+  my_network:
+    external: true
