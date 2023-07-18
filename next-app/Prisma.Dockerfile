@@ -8,8 +8,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-COPY prisma ./prisma
-COPY .env ./
+COPY . .
 
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
