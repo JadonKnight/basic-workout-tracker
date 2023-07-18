@@ -22,4 +22,4 @@ RUN \
 RUN npx prisma generate
 
 # Perform migration and seeding
-CMD ["npx", "prisma", "migrate", "deploy", "&&", "npx", "prisma", "db", "seed", "--preview-feature"]
+CMD sh -c "npx prisma migrate deploy && npx prisma db seed --preview-feature"
