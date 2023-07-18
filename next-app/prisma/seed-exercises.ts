@@ -28,34 +28,74 @@ export default async function seedExercises(prisma: PrismaClient) {
         "Start in a plank position with your hands slightly wider than shoulder-width apart. Lower your body down to the ground by bending your elbows. Push your body back up to the starting position.",
     },
     {
-      name: "Lunges",
-      description:
-        "Stand with your feet hip-width apart. Step forward with one foot and lower your body until your front knee is bent at a 90-degree angle. Push back up to the starting position and repeat with the other foot.",
-    },
-    {
-      name: "Shoulder Press",
+      name: "Overhead Shoulder Press",
       description:
         "Stand with your feet shoulder-width apart and hold dumbbells at shoulder level. Press the dumbbells up overhead until your arms are fully extended. Lower the dumbbells back down to shoulder level.",
     },
     {
-      name: "Bicep Curl",
+      name: "Incline Dumbbell Bench Press",
       description:
-        "Stand with your feet hip-width apart and hold dumbbells at your sides with your palms facing forward. Curl the dumbbells up towards your shoulders. Lower the dumbbells back down to your sides.",
+        "Lay on an incline bench and hold dumbbells at shoulder level. Press the dumbbells up overhead until your arms are fully extended. Lower the dumbbells back down to shoulder level.",
     },
     {
-      name: "Tricep Extension",
+      name: "Decline Barbell Bench Press",
       description:
-        "Hold a dumbbell with both hands and raise it above your head. Lower the dumbbell behind your head by bending your elbows. Raise the dumbbell back up to the starting position.",
+        "Lay on a decline bench and hold a barbell with an overhand grip, slightly wider than shoulder-width apart. Lower the barbell to your chest. Press the barbell back up to the starting position.",
     },
     {
-      name: "Leg Press",
+      name: "Lat Raise",
       description:
-        "Sit in a leg press machine with your feet shoulder-width apart on the platform. Push the platform away from you with your legs until they are fully extended. Lower the platform back down to the starting position.",
+        "Stand with your feet shoulder-width apart and hold dumbbells at your sides with your palms facing your body. Raise the dumbbells up and out to the sides until your arms are parallel to the ground. Lower the dumbbells back down to your sides.",
     },
     {
-      name: "Plank",
+      name: "Tricep Pushdown",
       description:
-        "Start in a push-up position and lower your body down onto your forearms. Hold your body in a straight line from head to heels.",
+        "Stand with your feet shoulder-width apart and hold a rope attachment with an overhand grip. Push the rope down until your arms are fully extended. Raise the rope back up to the starting position.",
+    },
+    {
+      name: "Dips",
+      description:
+        "Stand between two parallel bars and hold onto the bars with an overhand grip. Lower your body down until your elbows are bent at a 90-degree angle. Push your body back up to the starting position.",
+    },
+    {
+      name: "Bar Bell Curl",
+      description:
+        "Stand with your feet shoulder-width apart and hold a barbell with an underhand grip, slightly wider than shoulder-width apart. Curl the barbell up towards your shoulders. Lower the barbell back down to your sides.",
+    },
+    {
+      name: "Dumbbell Bench Row",
+      description:
+        "Lay on a bench and hold dumbbells at your sides with your palms facing your body. Raise the dumbbells up and out to the sides until your arms are parallel to the ground. Lower the dumbbells back down to your sides.",
+    },
+    {
+      name: "Hammer Curl",
+      description:
+        "Stand with your feet shoulder-width apart and hold dumbbells at your sides with your palms facing your body. Raise the dumbbells up and out to the sides until your arms are parallel to the ground. Lower the dumbbells back down to your sides.",
+    },
+    {
+      name: "Front Squat",
+      description:
+        "Stand with your feet shoulder-width apart and hold a barbell with an overhand grip, slightly wider than shoulder-width apart. Lower the barbell to your chest. Press the barbell back up to the starting position.",
+    },
+    {
+      name: "Bulgarian Split Squat",
+      description:
+        "Stand with your feet shoulder-width apart and hold dumbbells at your sides with your palms facing your body. Raise the dumbbells up and out to the sides until your arms are parallel to the ground. Lower the dumbbells back down to your sides.",
+    },
+    {
+      name: "Romanian Deadlift",
+      description:
+        "Stand with your feet shoulder-width apart and hold a barbell with an overhand grip, slightly wider than shoulder-width apart. Lower the barbell to your chest. Press the barbell back up to the starting position.",
+    },
+    {
+      name: "Hanging Leg Raise",
+      description:
+        "Hang from a pull-up bar with your hands shoulder-width apart, palms facing away from you. Pull your body up towards the bar until your chin is above the bar. Lower your body back down to the starting position.",
+    },
+    {
+      name: "Farmers Walk",
+      description:
+        "Stand with your feet shoulder-width apart and hold dumbbells at your sides with your palms facing your body. Raise the dumbbells up and out to the sides until your arms are parallel to the ground. Lower the dumbbells back down to your sides.",
     },
   ];
 
