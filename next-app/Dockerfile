@@ -60,27 +60,24 @@ FROM base AS runner
 
 WORKDIR /app
 
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+RUN chown -R nextjs:nodejs /app
+
+USER nextjs
+
 # Copy & generate prisma schema TODO: This isn't ideal and we definitely don't
 # want to be running npm install prisma here.
 COPY --from=builder /app/prisma ./prisma
 RUN npm install prisma
 RUN npx prisma generate --schema ./prisma/schema.prisma
 
-# Don't run production as root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Take ownership of the app directory
-RUN chown -R nextjs:nodejs /app
-
-USER nextjs
-
-COPY --from=builder /app/public ./public
-
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
 # Environment variables must be redefined at run time
 ARG ENV_VARIABLE
