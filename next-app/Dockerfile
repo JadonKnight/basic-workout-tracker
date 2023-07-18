@@ -3,6 +3,8 @@ FROM node:18-slim AS base
 
 # Step 1. Rebuild the source code only when needed
 FROM base AS builder
+# Apparently required for prisma to work
+RUN apt-get update -y && apt-get install -y openssl
 
 WORKDIR /app
 
@@ -60,17 +62,19 @@ FROM base AS runner
 
 WORKDIR /app
 
+# Copy this so we can change the permission
+COPY --from=builder /app/prisma ./prisma
+RUN npm install prisma
+
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+
+# Set the ownership and permissions
 RUN chown -R nextjs:nodejs /app
+RUN chmod -R 755 /app
 
-USER nextjs
-
-# Copy & generate prisma schema TODO: This isn't ideal and we definitely don't
-# want to be running npm install prisma here.
-COPY --from=builder /app/prisma ./prisma
-RUN npm install prisma
+# Generate the client
 RUN npx prisma generate --schema ./prisma/schema.prisma
 
 # Automatically leverage output traces to reduce image size
