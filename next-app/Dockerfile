@@ -1,5 +1,9 @@
 # Taken from the official Next.js Docker example except we don't use alpine due to issues deploying to pi.
-FROM node:18-slim AS base
+#FROM node:lts-slim AS base
+
+# This specific image is currently required, see - https://github.com/prisma/prisma/issues/19729#issuecomment-1590734304
+ 
+FROM node:18.15-slim AS base
 
 # Step 1. Rebuild the source code only when needed
 FROM base AS builder
@@ -88,6 +92,8 @@ ENV NEXT_PUBLIC_ENV_VARIABLE=${NEXT_PUBLIC_ENV_VARIABLE}
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 # Note: Don't expose ports here, Compose will handle that for us
+
+USER nextjs
 
 # Run migrate and seed and then start the app
 CMD ["node", "server.js"]
