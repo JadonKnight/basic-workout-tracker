@@ -62,20 +62,15 @@ FROM base AS runner
 
 WORKDIR /app
 
-# Copy this so we can change the permission
-COPY --from=builder /app/prisma ./prisma
 RUN npm install prisma
+
+# Generate the client
+COPY --from=builder /app/prisma ./prisma
+RUN npx prisma generate --schema ./prisma/schema.prisma
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
-
-# Set the ownership and permissions
-RUN chown -R nextjs:nodejs /app
-RUN chmod -R 755 /app
-
-# Generate the client
-RUN npx prisma generate --schema ./prisma/schema.prisma
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
@@ -95,4 +90,4 @@ ENV NEXT_PUBLIC_ENV_VARIABLE=${NEXT_PUBLIC_ENV_VARIABLE}
 # Note: Don't expose ports here, Compose will handle that for us
 
 # Run migrate and seed and then start the app
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "server.js"]
