@@ -7,7 +7,7 @@ import Layout from "@/components/layout";
 export default function Dashboard({ session }: { session: Session }) {
   return (
     <Layout session={session}>
-      <div className="bg-cyan-100">
+      <div className="bg-gray-100">
         {/* User Dashboard Section */}
         <section className="py-20">
           <div className="container mx-auto text-center">
