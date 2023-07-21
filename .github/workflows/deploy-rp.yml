@@ -16,3 +16,4 @@ jobs:
       run: |
        chmod +x deploy.sh
        ./deploy.sh
+      working-directory: /home/pi2/Web/basic-workout-tracker
