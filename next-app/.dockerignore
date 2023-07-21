@@ -1,0 +1,19 @@
+# Ignore Node.js related files and directories
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore development/build-related directories
+/.next/
+/out/
+
+# Ignore version control system directories and files
+.git
+.gitignore
+
+# Ignore any log files
+*.log
+
+# Ignore system files and directories
+.DS_Store
+Thumbs.db

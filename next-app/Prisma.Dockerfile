@@ -2,21 +2,18 @@
 FROM node:18.15-slim AS base
 
 # Apparently required for prisma to work
-RUN apt-get update -y && apt-get install -y openssl
+# RUN apt-get update -y && apt-get install -y openssl
 
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+# Install dependencies
+COPY package.json package-lock.json* ./
+
+# TODO: Fix this, it's not ideal to copy everything
+# should only copy the files needed for prisma to run the seed scripts
 COPY . .
 
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i; \
-  # Allow install without lockfile, so example works even without Node.js installed locally
-  else echo "Warning: Lockfile not found. It is recommended to commit lockfiles to version control." && yarn install; \
-  fi
+RUN npm ci
 
 RUN npx prisma generate
 

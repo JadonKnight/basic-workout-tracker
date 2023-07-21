@@ -2,7 +2,7 @@
 #FROM node:lts-slim AS base
 
 # This specific image is currently required, see - https://github.com/prisma/prisma/issues/19729#issuecomment-1590734304
- 
+
 FROM node:18.15-slim AS base
 
 # Step 1. Rebuild the source code only when needed
@@ -83,6 +83,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 # Environment variables must be redefined at run time
+# The point of these is that we need build and run time env vars,
+# I'm handling this currently by just copying them in, but obviously
+# this is bad practice, if the image was uploaded to a public image reop
+# FIXME: Find a better way to do this.
 ARG ENV_VARIABLE
 ENV ENV_VARIABLE=${ENV_VARIABLE}
 ARG NEXT_PUBLIC_ENV_VARIABLE
