@@ -17,5 +17,5 @@ jobs:
     - name: Run Deploy Script
       run: |
        chmod +x deploy.sh
-       ./deploy.sh
+       ./deploy.sh linux/arm64
       working-directory: /home/pi2/Web/basic-workout-tracker
