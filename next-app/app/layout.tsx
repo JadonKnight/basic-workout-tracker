@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import Navbar from "@/components/navbar";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import fetchServerSideSession from "@/lib/fetchServerSideSession";
 import Footer from "@/components/footer";
 
 export default async function RootLayout({
@@ -9,14 +8,18 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await fetchServerSideSession();
 
   return (
     <html lang="en">
       <body>
-        <Navbar session={session} />
-        {children}
-        <Footer />
+        <div className="flex flex-col min-h-screen">
+          <div className="sticky top-0">
+            <Navbar session={session} />
+          </div>
+          <main className="flex-grow bg-gray-100">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
