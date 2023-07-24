@@ -12,10 +12,17 @@
     "todo-ci": "leasot -x --reporter markdown '**/*.{js,jsx,ts,tsx}' --ignore './db-data','./node_modules' > TODO.md",
     "seed": "npx prisma db seed --preview-feature",
     "reset-seed": "npx prisma migrate reset",
-    "start:prod": "npx prisma migrate deploy && npx prisma db seed && node server.js"
+    "start:prod": "npx prisma migrate deploy && npx prisma db seed && node server.js",
+    "find:unused": "next-unused"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
+  "next-unused": {
+    "alias": {},
+    "include": ["components", "lib"],
+    "exclude": [],
+    "entrypoints": ["app"]
   },
   "dependencies": {
     "@headlessui/react": "^1.7.8",
