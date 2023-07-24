@@ -20,6 +20,7 @@ module.exports = {
     "no-unused-expressions": ["error"],
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["error"],
+    "@typescript-eslint/no-explicit-any": "error",
     "no-console": ["error", { allow: ["error", "warn"] }],
     // Ignore vars that start with _
     "@typescript-eslint/no-unused-vars": [
