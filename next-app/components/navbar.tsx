@@ -1,3 +1,5 @@
+"use client";
+
 import { Fragment } from "react";
 import { Menu, Transition, Popover } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -5,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
 import type { Session } from "next-auth";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 interface NavLinks {
   name: string;
   href: string;
@@ -17,18 +19,18 @@ function classNames(...classes: string[]): string {
 }
 
 export default function Navbar({ session }: { session: Session | null }) {
-  const router = useRouter();
+  const pathName = usePathname();
 
   const navigation: NavLinks[] = [
     {
       name: "Workouts",
       href: "/workouts",
-      current: router.pathname === "/workouts",
+      current: pathName === "/workouts",
     },
     {
       name: "New Workout",
       href: "/workouts/new",
-      current: router.pathname === "/workouts/new",
+      current: pathName === "/workouts/new",
     },
   ];
   return (

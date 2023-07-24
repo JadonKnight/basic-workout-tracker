@@ -1,15 +1,27 @@
-// FIXME: This was breaking signup, don't need for now so I'll comment out for now
+/**
+ * The middleware is currently serving to redirct the home page
+ * to the dashboard if the user is authenticated with a token.
+ *
+ * Could be expanded at later date for more functionality.
+ */
 
-// import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-// // Define custom behavior for protected routes.
-// // More here - https://next-auth.js.org/configuration/nextjs#secret
+export async function middleware(request: NextRequest) {
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET
+  });
 
-// export default withAuth({
-//   pages: {
-//     signIn: "/signin",
-//   },
-// });
+  if (!token) {
+    return NextResponse.next();
+  }
 
-// export const config = { matcher: ["/workout/new", "/api/:path*", "/dashboard"] };
-export default () => undefined;
+  return NextResponse.redirect(new URL("/dashboard", request.url));
+}
+
+export const config = {
+  matcher: "/",
+};
