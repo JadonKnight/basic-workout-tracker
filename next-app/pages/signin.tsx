@@ -31,6 +31,7 @@ export default function Signin() {
     })) as SignInResponse;
 
     if (signInAttempt.ok) {
+      // FIXME: This should redirect to the callback url, not just the dashboard
       router.push("/dashboard");
     } else {
       // Wipe the password field

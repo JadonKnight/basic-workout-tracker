@@ -17,7 +17,12 @@ export default async function RootLayout({
           <div className="sticky top-0">
             <Navbar session={session} />
           </div>
-          <main className="flex-grow bg-gray-100">{children}</main>
+          <main
+            className="flex-grow bg-gradient-to-b from-violet-500
+                  to-blue-500"
+          >
+            {children}
+          </main>
           <Footer />
         </div>
       </body>

@@ -1,8 +1,12 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { Session } from "next-auth";
+import { Session, DefaultUser } from "next-auth";
+
+export interface DefaultUserSession extends Session {
+  user: DefaultUser
+}
 
 export default async function fetchServerSideSession() {
-  const session: Session | null = await getServerSession(authOptions);
+  const session: DefaultUserSession | null = await getServerSession(authOptions);
   return session;
 }

@@ -19,6 +19,7 @@ daysOfWeekMap.set(64, "Saturday");
 
 export const maskDaysOfWeek = (daysOfWeekSelection: DaysOfWeekSelection) => {
   let bitmask = 0;
+  // FIXME: es5 typescript error
   for (const [key, value] of daysOfWeekMap) {
     if (daysOfWeekSelection[value]) {
       bitmask += key;

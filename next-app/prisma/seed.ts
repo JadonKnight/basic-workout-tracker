@@ -1,7 +1,7 @@
 import prisma from "../lib/prisma";
 import bcrypt from "bcrypt";
 import { faker } from "@faker-js/faker";
-
+import fs from "fs";
 import seedExercises from "./seed-exercises";
 
 async function main() {
@@ -103,54 +103,76 @@ async function main() {
         },
       });
 
-      const sessionStart = new Date(faker.date.recent());
-      // Generate a random amount of minutes between 15 and 120
-      const sessionDuration = Math.random() * (120 - 15) + 15;
-      const sessionEnd = new Date(sessionStart.getTime() + sessionDuration * 60000);
+      // Generate random amount of sessions for each user
+      const sessions = faker.number.int({ min: 5, max: 100 });
 
-      const workoutSession = await prisma.workoutSession.create({
-        data: {
-          workoutId: createdWorkout.id,
-          // TODO: Create a random date between 1 and 7 days ago
-          startedAt: sessionStart,
-          endedAt: sessionEnd
-        },
-      });
+      for (let i = 0; i < sessions; i++) {
+        const sessionStart = new Date(faker.date.recent({ days: 60 }));
+        // Generate a random amount of minutes between 15 and 120
+        const sessionDuration = Math.random() * (120 - 15) + 15;
+        const sessionEnd = new Date(
+          sessionStart.getTime() + sessionDuration * 60000
+        );
 
-      // Create at least 3 sets for each exercise for each workout session
-      const workoutSessionExercise = await prisma.workoutSet.createMany({
-        // TODO: Better randomise this.
-        data: [
-          {
-            workoutSessionId: workoutSession.id,
-            workoutExerciseId: workoutExercise1.id,
-            reps: 10,
-            weight: 100,
-            workingInterval: 60,
-            restInterval: 30,
+        const workoutSession = await prisma.workoutSession.create({
+          data: {
+            workoutId: createdWorkout.id,
+            // TODO: Create a random date between 1 and 7 days ago
+            startedAt: sessionStart,
+            endedAt: sessionEnd,
           },
-          {
-            workoutSessionId: workoutSession.id,
-            workoutExerciseId: workoutExercise2.id,
-            reps: 10,
-            weight: 100,
-            workingInterval: 60,
-            restInterval: 30,
-          },
-          {
-            workoutSessionId: workoutSession.id,
-            workoutExerciseId: workoutExercise3.id,
-            reps: 10,
-            weight: 100,
-            workingInterval: 60,
-            restInterval: 30,
-          },
-        ],
-      });
+        });
+
+        const reps = { min: 5, max: 20 };
+        const weight = { min: 12, max: 100 };
+        const wi = { min: 30, max: 120 };
+        const ri = { min: 30, max: 240 };
+
+        // Create at least 3 sets for each exercise for each workout session
+        const workoutSessionExercise = await prisma.workoutSet.createMany({
+          data: [
+            {
+              workoutSessionId: workoutSession.id,
+              workoutExerciseId: workoutExercise1.id,
+              reps: faker.number.int(reps),
+              weight: faker.number.int(weight),
+              workingInterval: faker.number.int(wi),
+              restInterval: faker.number.int(ri),
+            },
+            {
+              workoutSessionId: workoutSession.id,
+              workoutExerciseId: workoutExercise2.id,
+              reps: faker.number.int(reps),
+              weight: faker.number.int(weight),
+              workingInterval: faker.number.int(wi),
+              restInterval: faker.number.int(ri),
+            },
+            {
+              workoutSessionId: workoutSession.id,
+              workoutExerciseId: workoutExercise3.id,
+              reps: faker.number.int(reps),
+              weight: faker.number.int(weight),
+              workingInterval: faker.number.int(wi),
+              restInterval: faker.number.int(ri),
+            },
+          ],
+        });
+      }
     }
   }
+  // Write the accounts to a local file so we can use it for dev
+  fs.writeFile(
+    "./dummy-accounts.json",
+    JSON.stringify(dummyAccounts, null, 2),
+    (err) => {
+      if (err) {
+        console.error("Error writing dummy account file", err);
+        return;
+      }
 
-  console.log("The following users have been seeded:", dummyAccounts);
+      console.log("The following users have been seeded:", dummyAccounts);
+    }
+  );
 
   await prisma.$disconnect();
 }
