@@ -90,14 +90,10 @@ export default async function Page() {
   }
 
   return (
-    <div className="flex flex-col justify-center">
-      <h2 className="flex flex-col text-2xl font-bold text-left p-3 text-white">
-        Hey
-        <div className="text-gray-300">{session.user.name}</div>
-      </h2>
-      <div className="flex items-center text-xl text-left p-3 text-white">
-        Progress for week of
-        <span className="ml-2 w-fit whitespace-nowrap rounded-full bg-pink-600 px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.75em] font-bold leading-none text-neutral-50 dark:bg-neutral-900">
+    <div className="flex flex-col">
+      <div className="flex flex-col w-full text-2xl text-left p-3 text-white mb-9">
+        Week
+        <span className="mt-1 w-fit whitespace-nowrap rounded-full bg-pink-600 px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.75em] font-bold leading-none text-neutral-50 dark:bg-neutral-900">
           {getBeginningOfWeek().toLocaleDateString()}
         </span>
       </div>
