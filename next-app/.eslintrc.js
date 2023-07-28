@@ -25,7 +25,7 @@ module.exports = {
     // Ignore vars that start with _
     "@typescript-eslint/no-unused-vars": [
       "error",
-      { argsIgnorePattern: "^_" },
+      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
     ],
   },
 };

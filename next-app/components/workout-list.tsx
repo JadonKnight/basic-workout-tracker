@@ -1,13 +1,18 @@
+"use client";
+
 import DropdownMenu from "@/components/dropdown-menu";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/outline";
-import type { Workout } from "@/types/types";
 import { unmaskDaysOfWeek } from "@/lib/day-bitmask";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AlertModal from "@/components/alert-modal";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import hashId from "@/lib/hashid";
 
-interface AlertableWorkout extends Workout {
+interface Workout {
+  id: number;
+  name: string;
+  daysOfWeek: number;
   alert?: boolean;
 }
 
@@ -16,16 +21,12 @@ export default function WorkoutList({
 }: {
   workoutsProp: Workout[];
 }) {
-  const [workouts, setWorkouts] = useState<AlertableWorkout[]>([]);
+  const [workouts, setWorkouts] = useState<Workout[]>(workoutsProp);
 
   const router = useRouter();
 
-  useEffect(() => {
-    setWorkouts(workoutsProp);
-  }, [workoutsProp]);
-
-  const deleteWorkout = async (id: string) => {
-    const response = await fetch(`/api/workouts/${id}`, {
+  const deleteWorkout = async (id: number) => {
+    const response = await fetch(`/api/workouts/${hashId.encode(id)}`, {
       method: "DELETE",
     });
 
@@ -34,6 +35,7 @@ export default function WorkoutList({
       // Redirect to error page for now
       // TODO: Create better error handling process.
       router.push("/500");
+      return;
     }
 
     // Filter out the removed workout
@@ -72,7 +74,7 @@ export default function WorkoutList({
                 items={[
                   {
                     name: "Edit",
-                    href: `/workouts/${workout.id}`,
+                    href: `/workouts/${hashId.encode(workout.id)}`,
                     icon: <PencilIcon className="w-4 h-4" />,
                   },
                   {
@@ -113,7 +115,7 @@ export default function WorkoutList({
             <div className="mt-4">
               <Link
                 className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-                href={`/workouts/${workout.id}/session`}
+                href={`/workouts/${hashId.encode(workout.id)}/session`}
               >
                 Start Workout
               </Link>
