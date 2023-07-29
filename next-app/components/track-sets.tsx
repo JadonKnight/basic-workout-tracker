@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 
 interface Set {
   weight: number;
@@ -35,9 +37,7 @@ export default function TrackSets({
     restInterval: 0,
   });
 
-  const [localPrevSessionSets] = useState<Set[]>(
-    prevSessionSets || []
-  );
+  const [localPrevSessionSets] = useState<Set[]>(prevSessionSets || []);
 
   const includeCurrentSet = (_currentSet?: Set) => {
     if (!_currentSet) _currentSet = currentSet;
@@ -62,6 +62,20 @@ export default function TrackSets({
       onUpdate(includeCurrentSet(set) ? [...prevSets, set] : prevSets);
     }
   };
+
+  const [innerWidth, setInnerWidth] = useState<number>(window.innerWidth);
+
+  const handleResize = () => {
+    setInnerWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col justify-between bg-white my-2 p-3 rounded">
@@ -92,10 +106,10 @@ export default function TrackSets({
                   }}
                 />
               </label>
-              {localPrevSessionSets[index]?.weight > 0 && (
+              {localPrevSessionSets[index]?.weight || 0 > 0 && (
                 <span className="text-sm sm:text-base text-center">
                   <span className="w-full inline-flex justify-center items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                    {localPrevSessionSets[index].weight}kg
+                    {localPrevSessionSets[index]?.weight}kg
                   </span>
                 </span>
               )}
@@ -116,10 +130,10 @@ export default function TrackSets({
                   }}
                 />
               </label>
-              {localPrevSessionSets[index]?.reps > 0 && (
+              {localPrevSessionSets[index]?.reps || 0 > 0 && (
                 <span className="text-sm sm:text-base text-center">
                   <span className="w-full inline-flex justify-center items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                    {localPrevSessionSets[index].reps} reps
+                    {localPrevSessionSets[index]?.reps} reps
                   </span>
                 </span>
               )}
@@ -129,7 +143,7 @@ export default function TrackSets({
               <label className="flex flex-col">
                 <span className="flex items-center text-sm sm:text-base">
                   <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
-                  {window.innerWidth < 640 ? "WI" : "Working Interval"}
+                  {innerWidth < 640 ? "WI" : "Working Interval"}
                 </span>
                 <input
                   type="number"
@@ -146,10 +160,10 @@ export default function TrackSets({
                   }}
                 />
               </label>
-              {localPrevSessionSets[index]?.workingInterval > 0 && (
+              {localPrevSessionSets[index]?.workingInterval || 0> 0 && (
                 <span className="text-sm sm:text-base text-center">
                   <span className="w-full inline-flex justify-center items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                    {localPrevSessionSets[index].workingInterval}s
+                    {localPrevSessionSets[index]?.workingInterval}s
                   </span>
                 </span>
               )}
@@ -159,7 +173,7 @@ export default function TrackSets({
               <label className="flex flex-col">
                 <span className="flex items-center text-sm sm:text-base">
                   <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                  {window.innerWidth < 640 ? "RI" : "Rest Interval"}
+                  {innerWidth < 640 ? "RI" : "Rest Interval"}
                 </span>
                 <input
                   type="number"
@@ -177,10 +191,10 @@ export default function TrackSets({
                 />
               </label>
 
-              {localPrevSessionSets[index]?.restInterval > 0 && (
+              {localPrevSessionSets[index]?.restInterval || 0 > 0 && (
                 <span className="text-sm sm:text-base text-center">
                   <span className="w-full inline-flex justify-center items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                    {localPrevSessionSets[index].restInterval}s
+                    {localPrevSessionSets[index]?.restInterval}s
                   </span>
                 </span>
               )}
@@ -232,7 +246,7 @@ export default function TrackSets({
           <label className="flex flex-col">
             <span className="flex items-center text-sm sm:text-base">
               <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
-              {window.innerWidth < 640 ? "WI" : "Working Interval"}
+              {innerWidth < 640 ? "WI" : "Working Interval"}
             </span>
             <input
               type="number"
@@ -251,7 +265,7 @@ export default function TrackSets({
           <label className="flex flex-col">
             <span className="flex items-center text-sm sm:text-base">
               <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-              {window.innerWidth < 640 ? "RI" : "Rest Interval"}
+              {innerWidth < 640 ? "RI" : "Rest Interval"}
             </span>
             <input
               type="number"
