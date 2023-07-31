@@ -59,28 +59,18 @@ export default async function Page({ params }: { params: { id: string } }) {
         <h2 className="text-2xl p-3 pl-0 text-white font-bold w-full">
           Perform {workout.name}
         </h2>
-        <div className="flex flex-row justify-between text-white">
-          <div className="flex flex-col sm:hidden">
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
-              <span>WI = Working Interval</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-              <span>RI = Rest Interval</span>
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm">
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-col text-white">
+            <span className="text-sm sm:text-base">
               Date: {startTime?.toLocaleString("en-US", { dateStyle: "short" })}
             </span>
-            <span className="text-sm">
+            <span className="text-sm sm:text-base">
               Start Time:{" "}
               {startTime?.toLocaleString("en-US", { timeStyle: "short" })}
             </span>
-            <span className="text-sm">
-              <Timer />
-            </span>
+          </div>
+          <div className="flex flex-col">
+            <Timer />
           </div>
         </div>
         <WorkoutTracker

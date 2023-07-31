@@ -1,6 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 
 export interface Set {
   weight: number;
@@ -150,9 +156,22 @@ export default function TrackSets({
 
             <div className="flex flex-col">
               <label className="flex flex-col">
-                <span className="flex items-center text-sm sm:text-base">
-                  <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
+                <span className="flex justify-between items-center text-sm sm:text-base">
                   {innerWidth < 640 ? "WI" : "Working Interval"}
+                  {innerWidth < 640 ? (
+                    <Popover>
+                      <PopoverTrigger>
+                        <QuestionMarkCircleIcon
+                          className="text-cyan-300"
+                          height={16}
+                          width={16}
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent className="border-none text-white bg-cyan-500">
+                        WI = Working Interval (s)
+                      </PopoverContent>
+                    </Popover>
+                  ) : null}
                 </span>
                 <input
                   type="number"
@@ -177,9 +196,22 @@ export default function TrackSets({
 
             <div className="flex flex-col">
               <label className="flex flex-col">
-                <span className="flex items-center text-sm sm:text-base">
-                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                <span className="flex justify-between items-center text-sm sm:text-base">
                   {innerWidth < 640 ? "RI" : "Rest Interval"}
+                  {innerWidth < 640 ? (
+                    <Popover>
+                      <PopoverTrigger>
+                        <QuestionMarkCircleIcon
+                          className="text-cyan-300"
+                          height={16}
+                          width={16}
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent className="border-none text-white bg-cyan-500">
+                        RI = Rest Interval (s)
+                      </PopoverContent>
+                    </Popover>
+                  ) : null}
                 </span>
                 <input
                   type="number"
@@ -247,9 +279,22 @@ export default function TrackSets({
             />
           </label>
           <label className="flex flex-col">
-            <span className="flex items-center text-sm sm:text-base">
-              <div className="w-3 h-3 bg-cyan-500 rounded-full mr-2"></div>
+            <span className="flex justify-between items-center text-sm sm:text-base">
               {innerWidth < 640 ? "WI" : "Working Interval"}
+              {innerWidth < 640 ? (
+                    <Popover>
+                      <PopoverTrigger>
+                        <QuestionMarkCircleIcon
+                          className="text-cyan-300"
+                          height={16}
+                          width={16}
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent className="border-none text-white bg-cyan-500">
+                        WI = Working Interval (s)
+                      </PopoverContent>
+                    </Popover>
+                  ) : null}
             </span>
             <input
               type="number"
@@ -266,9 +311,22 @@ export default function TrackSets({
             />
           </label>
           <label className="flex flex-col">
-            <span className="flex items-center text-sm sm:text-base">
-              <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+          <span className="flex justify-between items-center text-sm sm:text-base">
               {innerWidth < 640 ? "RI" : "Rest Interval"}
+              {innerWidth < 640 ? (
+                    <Popover>
+                      <PopoverTrigger>
+                        <QuestionMarkCircleIcon
+                          className="text-cyan-300"
+                          height={16}
+                          width={16}
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent className="border-none text-white bg-cyan-500">
+                        RI = Rest Interval (s)
+                      </PopoverContent>
+                    </Popover>
+                  ) : null}
             </span>
             <input
               type="number"
