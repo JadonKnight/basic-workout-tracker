@@ -99,7 +99,7 @@ export default function TrackSets({
       {prevSets.map((set, index) => (
         <div className="flex flex-col my-2" key={index}>
           <div className="flex justify-end">
-            <span className="w-fit items-center rounded-md bg-white px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-700/10">
+            <span className="mb-2 w-fit items-center rounded-md bg-white px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-700/10">
               #{index + 1}
             </span>
           </div>
@@ -241,7 +241,7 @@ export default function TrackSets({
       {/* Base entry point for adding reps */}
       <div className="flex flex-col my-2">
         <div className="flex justify-end">
-          <span className="w-fit items-center rounded-md bg-white px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-700/10">
+          <span className="w-fit mb-2 items-center rounded-md bg-white px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-700/10">
             #{prevSets.length + 1}
           </span>
         </div>
