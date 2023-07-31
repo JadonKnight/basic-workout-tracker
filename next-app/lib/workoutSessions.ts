@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 interface Parameters {
   fromDate?: Date;
   toDate?: Date;
+  workoutId?: number;
 }
 
 export default async function fetchWorkoutSessions(
@@ -10,12 +11,16 @@ export default async function fetchWorkoutSessions(
   parameters?: Parameters
 ) {
   const whereClause = {
+    // FIXME: Use the destructuring pattern like below to fix this up.
     AND: [
       { endedAt: { lt: parameters?.toDate } },
       { endedAt: { gt: parameters?.fromDate } },
     ],
     workout: {
       userId,
+      ...(parameters !== undefined && parameters.workoutId !== undefined
+        ? { id: parameters.workoutId }
+        : {}),
     },
   };
 

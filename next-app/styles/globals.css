@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+input,
+textarea,
+button,
+select,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -97,4 +105,8 @@ body {
 /* Define any custom tailwind classes here */
 .black-input {
   @apply rounded p-2 border-black border focus:outline-none focus:ring-1 focus:ring-black;
+}
+
+.white-input {
+  @apply rounded p-2 border-white border focus:outline-none focus:ring-1 focus:ring-white;
 }
