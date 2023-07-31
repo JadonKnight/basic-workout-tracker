@@ -27,7 +27,7 @@ export default function Timer() {
     }
 
     return (
-      hrs +
+      hrs.toString() +
       ":" +
       mins.toString().padStart(2, "0") +
       ":" +
@@ -53,12 +53,16 @@ export default function Timer() {
     }
   }, [active, startDate]);
 
-  const formattedTime = useMemo(() => msToTime(secondsElapsed), [secondsElapsed]);
+  const formattedTime = useMemo(
+    () => msToTime(secondsElapsed),
+    [secondsElapsed]
+  );
 
   return (
-    <span className="p-2 flex flex-row items-center justify-center mt-1 whitespace-nowrap rounded-full bg-gradient-to-br from-red-500 to-fuchsia-500 text-center font-bold leading-none text-neutral-50 dark:bg-neutral-900">
-      <ClockIcon className="mr-1" height={16} width={16} />
-      {formattedTime}
+    <span className="p-2 flex flex-row font-mono items-center justify-center mt-1 whitespace-nowrap rounded-full bg-gradient-to-br from-red-500 to-fuchsia-500 text-center font-bold leading-none text-neutral-50 dark:bg-neutral-900">
+      <ClockIcon className="mr-1 align-middle" height={16} width={16} />
+      {/* Custom height and padding since the mono-font causes alignment issues */}
+      <span className="h-[16px] pt-[2px]">{formattedTime}</span>
     </span>
   );
 }
