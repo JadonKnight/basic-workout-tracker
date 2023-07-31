@@ -54,11 +54,11 @@ export default async function Page({ params }: { params: { id: string } }) {
   const startTime = new Date();
 
   return (
-    <div className={`${"flex"} flex-col flex-grow-1 items-center`}>
-      <h2 className="text-2xl p-3 text-white font-bold w-full">
-        Perform {workout.name}
-      </h2>
-      <div className="flex flex-col w-full md:w-6/12 p-3">
+    <div className={"flex flex-col flex-grow-1 items-center"}>
+      <div className="flex flex-col w-full md:w-10/12 lg:w-8/12 xl:w-6/12 2xl:w-5/12 p-3">
+        <h2 className="text-2xl p-3 pl-0 text-white font-bold w-full">
+          Perform {workout.name}
+        </h2>
         <div className="flex flex-row justify-between text-white">
           <div className="flex flex-col sm:hidden">
             <div className="flex items-center">
@@ -70,7 +70,6 @@ export default async function Page({ params }: { params: { id: string } }) {
               <span>RI = Rest Interval</span>
             </div>
           </div>
-          {/* Add a date and time */}
           <div className="flex flex-col">
             <span className="text-sm">
               Date: {startTime?.toLocaleString("en-US", { dateStyle: "short" })}
@@ -84,7 +83,6 @@ export default async function Page({ params }: { params: { id: string } }) {
             </span>
           </div>
         </div>
-
         <WorkoutTracker
           workout={workout}
           lastSessionSets={lastWorkoutSessionSets}
