@@ -1,15 +1,27 @@
+"use client";
+
 import TrackSets from "@/components/track-sets";
+import { useRef } from "react";
 import type { Set } from "@/components/track-sets";
 import type { FetchWorkoutReturn } from "@/lib/workouts";
-
 interface Props {
-  workout: FetchWorkoutReturn;
+  workout: NonNullable<FetchWorkoutReturn>;
   lastSessionSets?: { [key: string]: Set[] };
 }
+
 export default function WorkoutTracker({ workout, lastSessionSets }: Props) {
+  // Create an object where each key maps to an exercise id and each value
+  // is an array of sets performed for each exercise.
+  const exerciseSetsRef = useRef(
+    Object.fromEntries(
+      workout.workoutExercise.map(({ exercise }) => {
+        return [exercise.id, [] as Set[]];
+      })
+    )
+  );
+
   return (
     <div className="flex flex-col">
-      {/* This here needs to be embedded in a client side component */}
       <ul>
         {workout?.workoutExercise
           .map((exercise) => exercise.exercise)

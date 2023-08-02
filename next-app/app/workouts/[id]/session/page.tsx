@@ -1,4 +1,5 @@
-// Begin the hardest rework of performing session
+// TODO: WIP migration from pages router
+
 import { fetchWorkout } from "@/lib/workouts";
 import fetchWorkoutSessions from "@/lib/workoutSessions";
 import fetchServerSideSession from "@/lib/fetchServerSideSession";
