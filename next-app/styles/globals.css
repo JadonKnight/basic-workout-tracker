@@ -108,5 +108,5 @@ body {
 }
 
 .white-input {
-  @apply rounded p-2 border-white border focus:outline-none focus:ring-1 focus:ring-white;
+  @apply rounded p-2 border-white border focus:outline-none focus:ring-1 focus:ring-white text-black;
 }

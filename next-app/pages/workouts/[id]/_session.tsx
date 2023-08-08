@@ -7,7 +7,7 @@ import Layout from "@/components/layout";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import hashId from "@/lib/hashid";
-import TrackSets from "@/components/track-sets";
+import TrackSets from "@/app/workouts/[id]/session/track-sets";
 import AlertOnUnload from "@/components/alert-on-unload";
 import AlertModal from "@/components/alert-modal";
 import Loader from "@/components/loader";

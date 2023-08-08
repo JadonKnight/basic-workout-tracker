@@ -1,8 +1,8 @@
 "use client";
 
-import TrackSets from "@/components/track-sets";
+import TrackExercise from "@/app/workouts/[id]/session/track-exercise";
 import { useRef } from "react";
-import type { Set } from "@/components/track-sets";
+import type { Set } from "@/app/workouts/[id]/session/track-exercise";
 import type { FetchWorkoutReturn } from "@/lib/workouts";
 interface Props {
   workout: NonNullable<FetchWorkoutReturn>;
@@ -27,7 +27,7 @@ export default function WorkoutTracker({ workout, lastSessionSets }: Props) {
           .map((exercise) => exercise.exercise)
           .map((exercise) => (
             <li key={exercise.id}>
-              <TrackSets
+              <TrackExercise
                 exerciseName={exercise.name}
                 prevSessionSets={
                   lastSessionSets ? lastSessionSets[exercise.id] : []
