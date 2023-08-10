@@ -3,10 +3,10 @@
 import { useEffect, useState, useMemo } from "react";
 import { ClockIcon } from "@heroicons/react/24/outline";
 
-export default function Timer() {
+export default function Timer({ startDateProp }: { startDateProp?: Date }) {
   const startDate = useMemo(() => {
-    return new Date();
-  }, []);
+    return startDateProp ?? new Date();
+  }, [startDateProp]);
 
   const [secondsElapsed, setSecondsElapsed] = useState<number>(0);
 
