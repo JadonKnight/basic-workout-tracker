@@ -42,6 +42,7 @@
     "@radix-ui/react-tooltip": "^1.0.6",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
+    "@types/ua-parser-js": "^0.7.36",
     "@typescript-eslint/eslint-plugin": "^5.51.0",
     "@typescript-eslint/parser": "^5.51.0",
     "bcrypt": "^5.1.0",
@@ -60,6 +61,8 @@
     "sharp": "^0.32.3",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.6",
+    "ua-parser-js": "^1.0.35",
+    "vaul": "^0.2.3",
     "zod": "^3.21.4"
   },
   "devDependencies": {
