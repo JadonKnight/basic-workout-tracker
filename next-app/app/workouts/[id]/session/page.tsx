@@ -9,7 +9,7 @@ import { notFound } from "next/navigation";
 import Timer from "@/components/timer";
 import WorkoutTracker from "./workout-tracker";
 
-import type { Set } from "@/app/workouts/[id]/session/track-sets";
+import type { Set } from "@/app/workouts/[id]/session/track-exercise";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await fetchServerSideSession();
