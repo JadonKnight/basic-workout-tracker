@@ -7,16 +7,21 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  CheckCircleIcon,
+  QuestionMarkCircleIcon,
+} from "@heroicons/react/24/outline";
 import Timer from "@/components/timer";
 import { NonDissmissibleDrawer } from "@/components/drawer";
 import { useMobileContext } from "@/context/mobile-context";
 export interface Set {
   weight?: number;
   reps: number;
-  workingInterval: number;
-  // Because rest interval is determined automatically
-  // between sets, I'm making it optional.
   restInterval?: number;
   startedAt: Date;
   endedAt: Date;
@@ -25,8 +30,6 @@ export interface Set {
 interface InProgressSet {
   weight?: number;
   reps?: number;
-  workingInterval?: number;
-  restInterval?: number;
   startedAt: Date;
   endedAt?: Date;
 }
@@ -41,6 +44,13 @@ interface TrackExerciseProps {
   exerciseName: string;
   onUpdate?: (sets: Set[]) => void;
   prevSessionSets?: Set[];
+}
+
+function formattedTimeDiffSeconds(startTime: Date, endTime: Date): string {
+  const timeDiff = endTime.getTime() - startTime.getTime();
+  const timeDiffS = timeDiff / 1000;
+
+  return `${timeDiffS.toFixed(2)} s`;
 }
 
 export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
@@ -128,6 +138,63 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                     </span>
                   </div>
                 </div>
+                <ol className="my-2">
+                  {/* Head */}
+                  <li className="grid grid-cols-5 gap-1">
+                    <span className="font-semibold">Set #</span>
+                    <span className="font-semibold">Weight</span>
+                    <span className="font-semibold">Reps</span>
+                    <span className="font-semibold flex items-center">
+                      WI
+                      <Popover>
+                        <PopoverTrigger className="ml-3">
+                          <QuestionMarkCircleIcon
+                            className="text-cyan-300"
+                            height={16}
+                            width={16}
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          WI = Working Interval (s) or the time taken to
+                          complete the set.
+                        </PopoverContent>
+                      </Popover>
+                    </span>
+                    <span className="font-semibold flex items-center">
+                      RI
+                      <Popover>
+                        <PopoverTrigger className="ml-3">
+                          <QuestionMarkCircleIcon
+                            className="text-cyan-300"
+                            height={16}
+                            width={16}
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          RI = Rest Interval (s) or the time taken since
+                          completing the previous set.
+                        </PopoverContent>
+                      </Popover>
+                    </span>
+                  </li>
+                  {exerciseData.sets.map((set, index) => {
+                    return (
+                      <li className="grid grid-cols-5 gap-1" key={index}>
+                        <span>{index}</span>
+                        <span>{set.weight} kg</span>
+                        <span>{set.reps}</span>
+                        <span>
+                          {formattedTimeDiffSeconds(set.startedAt, set.endedAt)}
+                        </span>
+                        <span>
+                          {set.restInterval !== undefined
+                            ? `${(set.restInterval / 1000).toFixed(2)} s`
+                            : null}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ol>
                 {currentSet !== undefined ? (
                   <div className="flex flex-col items-center w-full">
                     Set Time
@@ -141,9 +208,25 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                   <button
                     className="w-full md:w-fit bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded mt-4"
                     onClick={() => {
-                      // TODO: Find the last set and update it's rest interval
-                      // by using a new Date() time stamp - the endedat timestamp for it.
-
+                      const lastSet =
+                        exerciseData.sets[exerciseData.sets.length - 1];
+                      if (lastSet !== undefined) {
+                        setExerciseData({
+                          ...exerciseData,
+                          sets: [
+                            ...exerciseData.sets.slice(
+                              0,
+                              exerciseData.sets.length - 1
+                            ),
+                            {
+                              ...lastSet,
+                              restInterval:
+                                new Date().getTime() -
+                                lastSet.endedAt.getTime(),
+                            },
+                          ],
+                        });
+                      }
                       setCurrentSet({
                         startedAt: new Date(),
                         weight: targetWeight,
@@ -182,7 +265,10 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                           onChange={(e) => {
                             setCurrentSet({
                               ...currentSet,
-                              weight: Number(e.target.value),
+                              weight:
+                                e.target.value !== ""
+                                  ? Number(e.target.value)
+                                  : undefined,
                             });
                           }}
                         ></input>
@@ -200,17 +286,11 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                       </div>
                     }
                     onClose={() => {
-                      // Calculate the working interval from cSet.startedAt - cSet.endedAt
-
-                      // TODO: Test and improve this. Very rough still...
                       const newSet: Set = {
                         startedAt: currentSet.startedAt,
                         endedAt: currentSet.endedAt ?? new Date(),
                         reps: currentSet.reps ?? 0,
                         weight: currentSet.weight,
-                        workingInterval:
-                          (currentSet.endedAt ?? new Date()).getTime() -
-                          currentSet.startedAt.getTime(),
                       };
                       setExerciseData({
                         ...exerciseData,
