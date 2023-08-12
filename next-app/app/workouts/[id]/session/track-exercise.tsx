@@ -46,7 +46,7 @@ interface TrackExerciseProps {
   prevSessionSets?: Set[];
 }
 
-function formattedTimeDiffSeconds(startTime: Date, endTime: Date): string {
+function formattedTimeDiffSeconds(startTime: Date, endTime: Date) {
   const timeDiff = endTime.getTime() - startTime.getTime();
   const timeDiffS = timeDiff / 1000;
 
@@ -227,9 +227,14 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                           ],
                         });
                       }
+
+                      // Set the current set based on the last set if it exists,
+                      // this allows ease to default set weight and rep
+                      // to lower user input where possible.
                       setCurrentSet({
                         startedAt: new Date(),
-                        weight: targetWeight,
+                        weight: lastSet?.weight ?? targetWeight,
+                        reps: lastSet?.reps ?? undefined,
                       });
                     }}
                   >
@@ -276,10 +281,14 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                         <input
                           className="white-input"
                           type="number"
+                          value={currentSet.reps ?? ""}
                           onChange={(e) => {
                             setCurrentSet({
                               ...currentSet,
-                              reps: Number(e.target.value),
+                              reps:
+                                e.target.value !== ""
+                                  ? Number(e.target.value)
+                                  : undefined,
                             });
                           }}
                         ></input>
