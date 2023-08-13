@@ -42,7 +42,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       return {
         ...acc,
         [workoutExercise.exercise.id]: [
-          ...(acc[workoutExercise.id] || []),
+          ...(acc[workoutExercise.exercise.id] || []),
           set,
         ],
       };
