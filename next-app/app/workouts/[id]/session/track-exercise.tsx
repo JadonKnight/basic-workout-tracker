@@ -129,6 +129,16 @@ export default function TrackExercise({
           <AccordionContent>
             {!exerciseData?.startedAt ? (
               <div className="grid sm:grid-cols-2 gap-3">
+                {maxWeightRepPair.maxRep !== undefined ||
+                maxWeightRepPair.maxWeight !== undefined ? (
+                  <div className="flex flex-col border-l-2 border-l-cyan-300 p-2 bg-opacity-25 bg-black">
+                    <span className="font-semibold text-lg">
+                      Previous session
+                    </span>
+                    <span>Max weight (kg): {maxWeightRepPair.maxRep}</span>
+                    <span>Max reps: {maxWeightRepPair.maxWeight}</span>
+                  </div>
+                ) : null}
                 <div className="flex flex-col">
                   <label htmlFor="weight-input">Target Set Weight (kg)</label>
                   <input
