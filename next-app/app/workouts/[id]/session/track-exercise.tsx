@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -54,7 +54,7 @@ function formattedTimeDiffSeconds(startTime: Date, endTime: Date) {
 }
 
 export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
-  const [workoutComplete, _setWorkoutComplete] = useState(false);
+  const [exerciseComplete, setExerciseComplete] = useState(false);
   const [targetWeight, setTargetWeight] = useState<number | undefined>(
     undefined
   );
@@ -70,15 +70,25 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
 
   const { isMobile } = useMobileContext();
 
+  useEffect(() => {
+    if (
+      targetSetNumber !== undefined &&
+      exerciseData !== undefined &&
+      exerciseData.sets.length >= targetSetNumber
+    ) {
+      setExerciseComplete(true);
+    }
+  }, [exerciseData, targetSetNumber]);
+
   return (
     <div className="flex flex-col bg-black bg-opacity-30 my-2 p-3 rounded text-white">
       {/* NOTE: Use defaultValue param on accordian to set it open by default */}
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1" className="border-none">
           <AccordionTrigger>
-            <div className="flex items-center justify-between w-full">
-              <h3 className="text-xl my-2">{exerciseName}</h3>
-              {workoutComplete ? (
+            <div className="flex items-center justify-start w-full">
+              <h3 className="text-xl my-2 mr-2">{exerciseName}</h3>
+              {exerciseComplete ? (
                 <CheckCircleIcon
                   className="text-green-500"
                   height={32}
@@ -180,7 +190,7 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                   {exerciseData.sets.map((set, index) => {
                     return (
                       <li className="grid grid-cols-5 gap-1" key={index}>
-                        <span>{index}</span>
+                        <span>{index + 1}</span>
                         <span>{set.weight} kg</span>
                         <span>{set.reps}</span>
                         <span>
