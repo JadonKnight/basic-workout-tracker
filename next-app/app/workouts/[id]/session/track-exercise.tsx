@@ -53,13 +53,42 @@ function formattedTimeDiffSeconds(startTime: Date, endTime: Date) {
   return `${timeDiffS.toFixed(2)} s`;
 }
 
-export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
+export default function TrackExercise({
+  exerciseName,
+  prevSessionSets,
+}: TrackExerciseProps) {
+  // TODO: Write some unit tests for this, I'm not confident it's logically sound.
+  // For purposes of auto filling we want to grab the last max weight/rep pair.
+  const maxWeightRepPair = (prevSessionSets ?? []).reduce(
+    (acc, curr) => {
+      // Just using nullish coalescing for undefined values
+      if ((curr.weight ?? -1) > (acc.maxWeight ?? -1)) {
+        acc.maxWeight = curr.weight;
+        acc.maxRep = curr.reps;
+        return acc;
+      }
+
+      // If the current weight is the same we can set the higher rep count
+      if (curr.weight === acc.maxWeight && curr.reps > (acc.maxRep ?? -1)) {
+        acc.maxRep = curr.reps;
+        acc.maxWeight = curr.weight;
+        return acc;
+      }
+
+      return acc;
+    },
+    { maxWeight: undefined, maxRep: undefined } as {
+      maxWeight: undefined | number;
+      maxRep: undefined | number;
+    }
+  );
+
   const [exerciseComplete, setExerciseComplete] = useState(false);
   const [targetWeight, setTargetWeight] = useState<number | undefined>(
-    undefined
+    maxWeightRepPair.maxWeight
   );
   const [targetSetNumber, setTargetSetNumber] = useState<number | undefined>(
-    undefined
+    prevSessionSets?.length
   );
   const [exerciseData, setExerciseData] = useState<
     TrackExerciseData | undefined
@@ -105,8 +134,15 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                   <input
                     id="weight-input"
                     className="white-input"
+                    value={targetWeight ?? ""}
                     type="number"
-                    onChange={(e) => setTargetWeight(Number(e.target.value))}
+                    onChange={(e) =>
+                      setTargetWeight(
+                        e.target.value !== ""
+                          ? Number(e.target.value)
+                          : undefined
+                      )
+                    }
                   ></input>
                 </div>
                 <div className="flex flex-col">
@@ -114,8 +150,15 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                   <input
                     id="target-set-input"
                     className="white-input"
+                    value={targetSetNumber ?? ""}
                     type="number"
-                    onChange={(e) => setTargetSetNumber(Number(e.target.value))}
+                    onChange={(e) =>
+                      setTargetSetNumber(
+                        e.target.value !== ""
+                          ? Number(e.target.value)
+                          : undefined
+                      )
+                    }
                   ></input>
                 </div>
                 <button
@@ -244,7 +287,7 @@ export default function TrackExercise({ exerciseName }: TrackExerciseProps) {
                       setCurrentSet({
                         startedAt: new Date(),
                         weight: lastSet?.weight ?? targetWeight,
-                        reps: lastSet?.reps ?? undefined,
+                        reps: lastSet?.reps ?? maxWeightRepPair.maxRep,
                       });
                     }}
                   >
