@@ -36,13 +36,13 @@ interface InProgressSet {
 
 export interface TrackExerciseData {
   startedAt: Date;
-  finishedAt?: Date;
+  endedAt?: Date;
   sets: Set[];
 }
 
-interface TrackExerciseProps {
+export interface TrackExerciseProps {
   exerciseName: string;
-  onUpdate?: (sets: Set[]) => void;
+  onExerciseDataChange?: (exerciseData: TrackExerciseData) => void;
   prevSessionSets?: Set[];
 }
 
@@ -56,6 +56,7 @@ function formattedTimeDiffSeconds(startTime: Date, endTime: Date) {
 export default function TrackExercise({
   exerciseName,
   prevSessionSets,
+  onExerciseDataChange,
 }: TrackExerciseProps) {
   // TODO: Write some unit tests for this, I'm not confident it's logically sound.
   // For purposes of auto filling we want to grab the last max weight/rep pair.
@@ -100,14 +101,31 @@ export default function TrackExercise({
   const { isMobile } = useMobileContext();
 
   useEffect(() => {
+    // FIXME: What happens if there isn't a targetSet Number?
+    // I suppose because we still pass up data, it will get captured regardless...
     if (
+      !exerciseComplete &&
       targetSetNumber !== undefined &&
       exerciseData !== undefined &&
       exerciseData.sets.length >= targetSetNumber
     ) {
       setExerciseComplete(true);
+
+      const finishedExercise = {
+        ...exerciseData,
+        endedAt: new Date(),
+      };
+
+      setExerciseData(finishedExercise);
     }
-  }, [exerciseData, targetSetNumber]);
+  }, [exerciseComplete, exerciseData, targetSetNumber]);
+
+  // Use this to call up to the parent when the exerciseData changes.
+  useEffect(() => {
+    if (onExerciseDataChange !== undefined && exerciseData !== undefined) {
+      onExerciseDataChange(exerciseData);
+    }
+  }, [exerciseData, onExerciseDataChange]);
 
   return (
     <div className="flex flex-col bg-black bg-opacity-30 my-2 p-3 rounded text-white">
@@ -269,6 +287,7 @@ export default function TrackExercise({
 
                 {currentSet === undefined ? (
                   <button
+                    key={`${exerciseName}-perform-set`}
                     className="w-full md:w-fit bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded mt-4"
                     onClick={() => {
                       const lastSet =
