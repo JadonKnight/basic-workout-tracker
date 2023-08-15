@@ -155,6 +155,7 @@ export default function TrackExercise({
                     </span>
                     <span>Max weight (kg): {maxWeightRepPair.maxRep}</span>
                     <span>Max reps: {maxWeightRepPair.maxWeight}</span>
+                    <span>Max sets: {prevSessionSets?.length}</span>
                   </div>
                 ) : null}
                 <div className="flex flex-col">
@@ -392,6 +393,9 @@ export default function TrackExercise({
                     closeText="Save Set"
                   />
                 ) : (
+                  // TODO: Add appropriate modal for desktop users...
+                  // not priority since I doubt many would be using it
+                  // on desktop during a workout lol...
                   <div> Dialogue Modal Coming </div>
                 )}
               </div>
