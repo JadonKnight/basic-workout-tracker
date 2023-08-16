@@ -63,6 +63,8 @@ model WorkoutSet {
   restInterval      Int?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime?
+  startedAt         DateTime?
+  endedAt           DateTime?
   workoutExerciseId Int
   workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id])
   workoutSessionId  Int
@@ -70,20 +72,22 @@ model WorkoutSet {
 }
 
 model WorkoutExercise {
-  id         Int      @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   workoutId  Int
   exerciseId Int
-  workout    Workout  @relation(fields: [workoutId], references: [id])
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  startedAt  DateTime?
+  endedAt    DateTime?
+  workout    Workout      @relation(fields: [workoutId], references: [id])
+  exercise   Exercise     @relation(fields: [exerciseId], references: [id])
   sets       WorkoutSet[]
 }
 
 model WorkoutSession {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
   startedAt DateTime?
   endedAt   DateTime?
   workoutId Int
-  workout   Workout   @relation(fields: [workoutId], references: [id])
+  workout   Workout      @relation(fields: [workoutId], references: [id])
   sets      WorkoutSet[]
 }
