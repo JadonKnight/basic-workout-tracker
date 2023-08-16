@@ -59,7 +59,6 @@ model WorkoutSet {
   id                Int             @id @default(autoincrement())
   reps              Int
   weight            Int?
-  workingInterval   Int?
   restInterval      Int?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime?
@@ -75,8 +74,6 @@ model WorkoutExercise {
   id         Int          @id @default(autoincrement())
   workoutId  Int
   exerciseId Int
-  startedAt  DateTime?
-  endedAt    DateTime?
   workout    Workout      @relation(fields: [workoutId], references: [id])
   exercise   Exercise     @relation(fields: [exerciseId], references: [id])
   sets       WorkoutSet[]
