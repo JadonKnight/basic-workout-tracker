@@ -2,13 +2,22 @@
 
 import TrackExercise from "@/app/workouts/[id]/session/track-exercise";
 import { useRef, useState } from "react";
+import { InlineLoader } from "@/components/loader";
+import hashId from "@/lib/hashid";
+import { useRouter } from "next/navigation";
+
 import type { Set } from "@/app/workouts/[id]/session/track-exercise";
 import type { FetchWorkoutReturn } from "@/lib/workouts";
 import type { TrackExerciseData } from "@/app/workouts/[id]/session/track-exercise";
+
+// Trying to make sure our backend source of truth is at least kind of
+// followed according to the typesafety checks with zod.
+import type { CreateWorkoutSchemaData } from "@/app/api/workouts/[id]/sessions/route";
 interface Props {
   workout: NonNullable<FetchWorkoutReturn>;
   lastSessionSets?: { [key: string]: Set[] };
   startTime: Date;
+  workoutId: number;
 }
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -18,7 +27,10 @@ export default function WorkoutTracker({
   workout,
   lastSessionSets,
   startTime,
+  workoutId,
 }: Props) {
+  const router = useRouter();
+
   // Create an object where each key maps to an exercise id and each value
   // is the data returned from the TrackExercise component
   const exerciseSetsRef = useRef(
@@ -30,13 +42,14 @@ export default function WorkoutTracker({
   );
 
   const [incompleteWarning, setIncompleteWarning] = useState(false);
+  const [submittingWorkout, setSubmittingWorkout] = useState(false);
 
   /**
    * @param {boolean} confirmed - allows user to confirm they wish to
    * submit the exercise even though it isn't complete.
-   * @returns {void}
+   * @returns {Promise<void>}
    */
-  const onFinishWorkout = (confirmed?: boolean) => {
+  const onFinishWorkout = async (confirmed?: boolean): Promise<void> => {
     //  Check for unfinished exercises and warn the user
     // if there are.
     if (
@@ -49,13 +62,39 @@ export default function WorkoutTracker({
       return;
     }
 
-    // After checking for unfinished workouts, we submit the workout
+    setIncompleteWarning(false);
+    setSubmittingWorkout(true);
 
-    // If the workout submission is successful, direct the user to their dashboard
+    const workoutData = exerciseSetsRef.current;
 
-    // If not, we probably need to look at a good 400/500 redirect strategy.
+    const data: CreateWorkoutSchemaData = {
+      startedAt: startTime,
+      endedAt: new Date(),
+      workoutData: workoutData ?? {},
+    };
 
-    console.log(exerciseSetsRef.current);
+    const response = await fetch(
+      `/api/workouts/${hashId.encode(workoutId)}/sessions`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
+    // Display an error modal and reset the UI so they can attempt another go.
+    if (!response.ok) {
+      console.error("uh oh");
+    }
+
+    // TODO: Instead of redirecting to dashboard we will instead be re-directing
+    // to the workout summary. This will either be a seperate page,
+    // or possibly a non-routeable page but a page in a page (using the new nextjs features)
+    // which overlays as a full page modal. This will then have linkage back to the dashboard.
+    router.push("/dashboard");
   };
 
   return (
@@ -77,43 +116,45 @@ export default function WorkoutTracker({
             </li>
           ))}
       </ul>
-      {/* Finish Workout */}
-      {!incompleteWarning ? (
-        <div className="flex flex-row justify-start">
-          <button
-            className="w-full md:w-fit bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-4"
-            onClick={() => onFinishWorkout()}
-          >
-            Finish Workout
-          </button>
-        </div>
-      ) : (
-        <Alert className="bg-amber-400 text-white border-amber-400">
-          <div className="flex flex-row items-start justify-between">
-            <ExclamationCircleIcon height={48} width={48} />
-            <div className="flex flex-col ml-2">
-              <AlertTitle>Are you sure?</AlertTitle>
-              <AlertDescription>
-                You have unfinished exercises in this workout.
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    className="md:w-fit outline outline-white text-white font-bold py-2 px-4 rounded mt-4"
-                    onClick={() => setIncompleteWarning(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="md:w-fit bg-blue-400 hover:bg-blue-500 outline outline-blue-400 text-white font-bold py-2 px-4 rounded mt-4"
-                    onClick={() => onFinishWorkout(true)}
-                  >
-                    Continue
-                  </button>
-                </div>
-              </AlertDescription>
-            </div>
+      <InlineLoader active={submittingWorkout}>
+        {/* Finish Workout */}
+        {!incompleteWarning ? (
+          <div className="flex flex-row justify-start">
+            <button
+              className="w-full md:w-fit bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-4"
+              onClick={() => onFinishWorkout()}
+            >
+              Finish Workout
+            </button>
           </div>
-        </Alert>
-      )}
+        ) : (
+          <Alert className="bg-amber-400 text-white border-amber-400">
+            <div className="flex flex-row items-start justify-between">
+              <ExclamationCircleIcon height={48} width={48} />
+              <div className="flex flex-col ml-2">
+                <AlertTitle>Are you sure?</AlertTitle>
+                <AlertDescription>
+                  You have unfinished exercises in this workout.
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      className="md:w-fit outline outline-white text-white font-bold py-2 px-4 rounded mt-4"
+                      onClick={() => setIncompleteWarning(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="md:w-fit bg-blue-400 hover:bg-blue-500 outline outline-blue-400 text-white font-bold py-2 px-4 rounded mt-4"
+                      onClick={() => onFinishWorkout(true)}
+                    >
+                      Continue
+                    </button>
+                  </div>
+                </AlertDescription>
+              </div>
+            </div>
+          </Alert>
+        )}
+      </InlineLoader>
     </div>
   );
 }

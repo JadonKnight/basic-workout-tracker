@@ -1,5 +1,3 @@
-// TODO: WIP migration from pages router
-
 import { fetchWorkout } from "@/lib/workouts";
 import fetchWorkoutSessions from "@/lib/workoutSessions";
 import fetchServerSideSession from "@/lib/fetchServerSideSession";
@@ -36,7 +34,6 @@ export default async function Page({ params }: { params: { id: string } }) {
       const set = {
         weight: curr.weight,
         reps: curr.reps,
-        workingInterval: curr.workingInterval,
         restInterval: curr.restInterval,
       };
       return {
@@ -78,6 +75,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           workout={workout}
           lastSessionSets={lastWorkoutSessionSets}
           startTime={startTime}
+          workoutId={workoutId}
         />
       </div>
     </div>
