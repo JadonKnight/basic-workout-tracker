@@ -136,7 +136,6 @@ async function main() {
               workoutExerciseId: workoutExercise1.id,
               reps: faker.number.int(reps),
               weight: faker.number.int(weight),
-              workingInterval: faker.number.int(wi),
               restInterval: faker.number.int(ri),
             },
             {
@@ -144,7 +143,6 @@ async function main() {
               workoutExerciseId: workoutExercise2.id,
               reps: faker.number.int(reps),
               weight: faker.number.int(weight),
-              workingInterval: faker.number.int(wi),
               restInterval: faker.number.int(ri),
             },
             {
@@ -152,7 +150,6 @@ async function main() {
               workoutExerciseId: workoutExercise3.id,
               reps: faker.number.int(reps),
               weight: faker.number.int(weight),
-              workingInterval: faker.number.int(wi),
               restInterval: faker.number.int(ri),
             },
           ],
