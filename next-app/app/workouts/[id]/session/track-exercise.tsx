@@ -153,8 +153,8 @@ export default function TrackExercise({
                     <span className="font-semibold text-lg">
                       Previous session
                     </span>
-                    <span>Max weight (kg): {maxWeightRepPair.maxRep}</span>
-                    <span>Max reps: {maxWeightRepPair.maxWeight}</span>
+                    <span>Max weight (kg): {maxWeightRepPair.maxWeight}</span>
+                    <span>Max reps: {maxWeightRepPair.maxRep}</span>
                     <span>Max sets: {prevSessionSets?.length}</span>
                   </div>
                 ) : null}
