@@ -51,33 +51,35 @@ export default async function Page({ params }: { params: { id: string } }) {
   const startTime = new Date();
 
   return (
-    <div className={"flex flex-col flex-grow-1 items-center"}>
-      <ForceRefresh />
-      <div className="flex flex-col w-full md:w-10/12 lg:w-8/12 xl:w-6/12 2xl:w-5/12 p-3">
-        <h2 className="text-2xl p-3 pl-0 text-white font-bold w-full">
-          Perform {workout.name}
-        </h2>
-        <div className="flex flex-row justify-between">
-          <div className="flex flex-col text-white">
-            <span className="text-sm sm:text-base">
-              Date: {startTime?.toLocaleString("en-US", { dateStyle: "short" })}
-            </span>
-            <span className="text-sm sm:text-base">
-              Start Time:{" "}
-              {startTime?.toLocaleString("en-US", { timeStyle: "short" })}
-            </span>
+    <ForceRefresh>
+      <div className={"flex flex-col flex-grow-1 items-center"}>
+        <div className="flex flex-col w-full md:w-10/12 lg:w-8/12 xl:w-6/12 2xl:w-5/12 p-3">
+          <h2 className="text-2xl p-3 pl-0 text-white font-bold w-full">
+            Perform {workout.name}
+          </h2>
+          <div className="flex flex-row justify-between">
+            <div className="flex flex-col text-white">
+              <span className="text-sm sm:text-base">
+                Date:{" "}
+                {startTime?.toLocaleString("en-US", { dateStyle: "short" })}
+              </span>
+              <span className="text-sm sm:text-base">
+                Start Time:{" "}
+                {startTime?.toLocaleString("en-US", { timeStyle: "short" })}
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <Timer />
+            </div>
           </div>
-          <div className="flex flex-col">
-            <Timer />
-          </div>
+          <WorkoutTracker
+            workout={workout}
+            lastSessionSets={lastWorkoutSessionSets}
+            startTime={startTime}
+            workoutId={workoutId}
+          />
         </div>
-        <WorkoutTracker
-          workout={workout}
-          lastSessionSets={lastWorkoutSessionSets}
-          startTime={startTime}
-          workoutId={workoutId}
-        />
       </div>
-    </div>
+    </ForceRefresh>
   );
 }
