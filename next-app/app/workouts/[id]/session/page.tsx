@@ -6,6 +6,7 @@ import hashid from "@/lib/hashid";
 import { notFound } from "next/navigation";
 import Timer from "@/components/timer";
 import WorkoutTracker from "./workout-tracker";
+import ForceRefresh from "@/components/force-refresh";
 
 import type { Set } from "@/app/workouts/[id]/session/track-exercise";
 
@@ -36,12 +37,10 @@ export default async function Page({ params }: { params: { id: string } }) {
         reps: curr.reps,
         restInterval: curr.restInterval,
       };
+
       return {
         ...acc,
-        [workoutExercise.exercise.id]: [
-          ...(acc[workoutExercise.exercise.id] || []),
-          set,
-        ],
+        [workoutExercise.id]: [...(acc[workoutExercise.id] || []), set],
       };
     },
     {} as {
@@ -53,6 +52,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   return (
     <div className={"flex flex-col flex-grow-1 items-center"}>
+      <ForceRefresh />
       <div className="flex flex-col w-full md:w-10/12 lg:w-8/12 xl:w-6/12 2xl:w-5/12 p-3">
         <h2 className="text-2xl p-3 pl-0 text-white font-bold w-full">
           Perform {workout.name}

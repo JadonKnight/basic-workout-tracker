@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -60,7 +60,7 @@ export default function TrackExercise({
 }: TrackExerciseProps) {
   // TODO: Write some unit tests for this, I'm not confident it's logically sound.
   // For purposes of auto filling we want to grab the last max weight/rep pair.
-  const maxWeightRepPair = (prevSessionSets ?? []).reduce(
+  const maxWeightRepPair = useRef((prevSessionSets ?? []).reduce(
     (acc, curr) => {
       // Just using nullish coalescing for undefined values
       if ((curr.weight ?? -1) > (acc.maxWeight ?? -1)) {
@@ -82,11 +82,11 @@ export default function TrackExercise({
       maxWeight: undefined | number;
       maxRep: undefined | number;
     }
-  );
+  ));
 
   const [exerciseComplete, setExerciseComplete] = useState(false);
   const [targetWeight, setTargetWeight] = useState<number | undefined>(
-    maxWeightRepPair.maxWeight
+    maxWeightRepPair.current.maxWeight
   );
   const [targetSetNumber, setTargetSetNumber] = useState<number | undefined>(
     prevSessionSets?.length
@@ -147,14 +147,14 @@ export default function TrackExercise({
           <AccordionContent>
             {!exerciseData?.startedAt ? (
               <div className="grid sm:grid-cols-2 gap-3">
-                {maxWeightRepPair.maxRep !== undefined ||
-                maxWeightRepPair.maxWeight !== undefined ? (
+                {maxWeightRepPair.current.maxRep !== undefined ||
+                maxWeightRepPair.current.maxWeight !== undefined ? (
                   <div className="flex flex-col border-l-2 border-l-cyan-300 p-2 bg-opacity-25 bg-black">
                     <span className="font-semibold text-lg">
                       Previous session
                     </span>
-                    <span>Max weight (kg): {maxWeightRepPair.maxWeight}</span>
-                    <span>Max reps: {maxWeightRepPair.maxRep}</span>
+                    <span>Max weight (kg): {maxWeightRepPair.current.maxWeight}</span>
+                    <span>Max reps: {maxWeightRepPair.current.maxRep}</span>
                     <span>Max sets: {prevSessionSets?.length}</span>
                   </div>
                 ) : null}
@@ -317,7 +317,7 @@ export default function TrackExercise({
                       setCurrentSet({
                         startedAt: new Date(),
                         weight: lastSet?.weight ?? targetWeight,
-                        reps: lastSet?.reps ?? maxWeightRepPair.maxRep,
+                        reps: lastSet?.reps ?? maxWeightRepPair.current.maxRep,
                       });
                     }}
                   >

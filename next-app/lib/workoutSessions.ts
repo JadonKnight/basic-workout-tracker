@@ -6,6 +6,10 @@ interface Parameters {
   workoutId?: number;
 }
 
+// FIXME: Clean up and hash IDs Use Select statements not include statements
+
+// FIXME: Explore caching of this result. It seems I run into some minor issues with caching
+// directly after updating the value.
 export default async function fetchWorkoutSessions(
   userId: number,
   parameters?: Parameters

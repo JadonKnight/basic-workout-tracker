@@ -1,7 +1,7 @@
 "use client";
 
 import TrackExercise from "@/app/workouts/[id]/session/track-exercise";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { InlineLoader } from "@/components/loader";
 import hashId from "@/lib/hashid";
 import { useRouter } from "next/navigation";
@@ -31,18 +31,19 @@ export default function WorkoutTracker({
 }: Props) {
   const router = useRouter();
 
-  // Create an object where each key maps to an exercise id and each value
+  // Create an object where each key maps to a workout exercise id and each value
   // is the data returned from the TrackExercise component
   const exerciseSetsRef = useRef(
     Object.fromEntries(
-      workout.workoutExercise.map(({ exercise }) => {
-        return [exercise.id, undefined as TrackExerciseData | undefined];
+      workout.workoutExercise.map(({ id }) => {
+        return [id, undefined as TrackExerciseData | undefined];
       })
     )
   );
 
   const [incompleteWarning, setIncompleteWarning] = useState(false);
   const [submittingWorkout, setSubmittingWorkout] = useState(false);
+  const [errorSubmitting, setErrorSubmitting] = useState(false);
 
   /**
    * @param {boolean} confirmed - allows user to confirm they wish to
@@ -50,6 +51,7 @@ export default function WorkoutTracker({
    * @returns {Promise<void>}
    */
   const onFinishWorkout = async (confirmed?: boolean): Promise<void> => {
+    if (errorSubmitting) setErrorSubmitting(false);
     //  Check for unfinished exercises and warn the user
     // if there are.
     if (
@@ -88,7 +90,7 @@ export default function WorkoutTracker({
     // TODO:
     // Display an error modal and reset the UI so they can attempt another go.
     if (!response.ok) {
-      console.error("uh oh");
+      setErrorSubmitting(true);
     }
 
     // TODO: Instead of redirecting to dashboard we will instead be re-directing
@@ -102,22 +104,46 @@ export default function WorkoutTracker({
     <div className="flex flex-col">
       <ul>
         {workout?.workoutExercise
-          .map((exercise) => exercise.exercise)
-          .map((exercise) => (
-            <li key={exercise.id}>
-              <TrackExercise
-                exerciseName={exercise.name}
-                prevSessionSets={
-                  lastSessionSets ? lastSessionSets[exercise.id] : []
-                }
-                onExerciseDataChange={(exerciseData) => {
-                  exerciseSetsRef.current[exercise.id] = exerciseData;
-                }}
-              />
-            </li>
-          ))}
+          .map(({id, exercise}) => {
+            return (
+              <li key={id}>
+                <TrackExercise
+                  exerciseName={exercise.name}
+                  prevSessionSets={
+                    lastSessionSets ? lastSessionSets[id] : []
+                  }
+                  onExerciseDataChange={(exerciseData) => {
+                    exerciseSetsRef.current[id] = exerciseData;
+                  }}
+                />
+              </li>
+            );
+          })}
       </ul>
       <InlineLoader active={submittingWorkout}>
+        {errorSubmitting ? (
+          <Alert className="bg-red-500 text-white">
+            <div className="flex flex-row items-start justify-between">
+              <ExclamationCircleIcon height={48} width={48} />
+              <div className="flex flex-col ml-2">
+                <AlertTitle className="font-bold">
+                  Error Submitting Workout!
+                </AlertTitle>
+                <AlertDescription className="font-semibold">
+                  Please try submitting again, if this issue continues please
+                  contact{" "}
+                  <a
+                    href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}
+                    className="text-white underline"
+                  >
+                    support
+                  </a>
+                  .
+                </AlertDescription>
+              </div>
+            </div>
+          </Alert>
+        ) : null}
         {/* Finish Workout */}
         {!incompleteWarning ? (
           <div className="flex flex-row justify-start">
@@ -129,22 +155,21 @@ export default function WorkoutTracker({
             </button>
           </div>
         ) : (
-          <Alert className="bg-amber-400 text-white border-amber-400">
+          <Alert className="bg-white text-amber-500 shadow-white shadow-sm">
             <div className="flex flex-row items-start justify-between">
-              <ExclamationCircleIcon height={48} width={48} />
               <div className="flex flex-col ml-2">
-                <AlertTitle>Are you sure?</AlertTitle>
-                <AlertDescription>
+                <AlertTitle className="font-bold">Are you sure?</AlertTitle>
+                <AlertDescription className="font-semibold">
                   You have unfinished exercises in this workout.
                   <div className="grid grid-cols-2 gap-2">
                     <button
-                      className="md:w-fit outline outline-white text-white font-bold py-2 px-4 rounded mt-4"
+                      className="md:w-fit outline outline-black text-black font-bold py-2 px-4 rounded mt-4"
                       onClick={() => setIncompleteWarning(false)}
                     >
                       Cancel
                     </button>
                     <button
-                      className="md:w-fit bg-blue-400 hover:bg-blue-500 outline outline-blue-400 text-white font-bold py-2 px-4 rounded mt-4"
+                      className="md:w-fit bg-black outline outline-black text-white font-bold py-2 px-4 rounded mt-4"
                       onClick={() => onFinishWorkout(true)}
                     >
                       Continue

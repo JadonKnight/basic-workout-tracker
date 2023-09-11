@@ -30,6 +30,7 @@ export async function fetchWorkout(userId: number, workoutId: number) {
       daysOfWeek: true,
       workoutExercise: {
         select: {
+          id: true,
           workoutId: true,
           exercise: {
             select: {
