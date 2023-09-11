@@ -85,6 +85,7 @@ export default function WorkoutTracker({
       }
     );
 
+    // TODO:
     // Display an error modal and reset the UI so they can attempt another go.
     if (!response.ok) {
       console.error("uh oh");

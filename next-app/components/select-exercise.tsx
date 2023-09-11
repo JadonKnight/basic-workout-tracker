@@ -6,12 +6,14 @@ interface Exercise {
   id: number;
 }
 
-export default function SelectWorkout({
+export default function SelectExercise({
   onSelected,
   currentSelection,
+  alwaysEmpty
 }: {
   onSelected: (selection: { name: string; id: number }) => void;
   currentSelection: number | undefined;
+  alwaysEmpty?: boolean
 }) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selection, setSelection] = useState<number | undefined>(undefined);
@@ -26,8 +28,10 @@ export default function SelectWorkout({
 
   // Set useEffect for currentSelection
   useEffect(() => {
-    setSelection(currentSelection);
-  }, [currentSelection]);
+    if (!alwaysEmpty) {
+      setSelection(currentSelection);
+    }
+  }, [currentSelection, alwaysEmpty]);
 
   return (
     <select
@@ -39,7 +43,8 @@ export default function SelectWorkout({
         })?.name;
         if (!selectionId || !selectionName) return;
 
-        setSelection(selectionId);
+        if (!alwaysEmpty)
+          setSelection(selectionId);
 
         onSelected({
           name: selectionName,
