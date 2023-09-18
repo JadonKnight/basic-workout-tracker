@@ -29,6 +29,7 @@ export async function fetchWorkout(userId: number, workoutId: number) {
       userId: true,
       daysOfWeek: true,
       workoutExercise: {
+        where: { isActive: true },
         select: {
           id: true,
           workoutId: true,

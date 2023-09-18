@@ -6,6 +6,9 @@ interface Exercise {
   id: number;
 }
 
+// FIXME: This has to fetch multiple times and it's not ideal.
+// Either load up a parent component that handles the pre-fetching once
+// or, something else.
 export default function SelectExercise({
   onSelected,
   currentSelection,

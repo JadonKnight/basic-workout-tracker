@@ -108,13 +108,16 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
       id: true,
       name: true,
       workoutExercise: {
+        where: {
+          isActive: true
+        },
         select: {
           id: true,
           exercise: {
             select: {
               name: true,
               description: true,
-              id: true
+              id: true,
             },
           },
         },
@@ -135,10 +138,10 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
         name: _workoutExercise.exercise.name,
         description: _workoutExercise.exercise.description,
         id: hashId.encode(_workoutExercise.exercise.id),
-        workoutExerciseId: hashId.encode(_workoutExercise.id)
+        workoutExerciseId: hashId.encode(_workoutExercise.id),
       };
     }),
-    id: hashId.encode(workout.id)
+    id: hashId.encode(workout.id),
   });
 }
 
@@ -154,8 +157,7 @@ async function PUT(req: NextApiRequest, res: NextApiResponse) {
   if (!workoutId) {
     return res.status(400).json({ error: "No workout id provided" });
   }
-  const parsedWorkoutId = [...workoutId].join("").toString();
-  const decodedWorkoutId = Number(hashId.decode(parsedWorkoutId));
+  const parsedWorkoutId = Number([...workoutId].join("").toString());
 
   // Validate the request body
   try {
@@ -163,29 +165,51 @@ async function PUT(req: NextApiRequest, res: NextApiResponse) {
       JSON.parse(req.body)
     );
 
-    // Create a new workout
-    const workoutUpdate = await prisma.workout.update({
-      where: {
-        id: decodedWorkoutId
-      },
-      data: {
-        name: workoutSubmission.name,
-        daysOfWeek: workoutSubmission.daysOfWeek,
-        updatedAt: new Date(),
-        workoutExercise: {
-          deleteMany: {},
-          create: workoutSubmission.exercises.map((exercise) => ({
-            exerciseId: exercise.id,
-          })),
+    await prisma.$transaction(async (prisma) => {
+      // This works by in-activating the workout exercises
+      // before re-activating each with an upsert
+      const _inactivateExercises = await prisma.workoutExercise.updateMany({
+        where: { workoutId: parsedWorkoutId },
+        data: {
+          isActive: false,
         },
-      },
-    });
+      });
 
-    res.json({ message: `Updated ${workoutUpdate.name}` });
+      // Now activate/create the updated list of exercises
+      workoutSubmission.exercises.forEach(async (exercise) => {
+        await prisma.workoutExercise.upsert({
+          where: {
+            WorkoutExerciseUnique: {
+              workoutId: parsedWorkoutId,
+              exerciseId: exercise.id,
+            },
+          },
+          update: { isActive: true },
+          create: {
+            workoutId: parsedWorkoutId,
+            exerciseId: exercise.id,
+          },
+        });
+      });
+
+      // Finally update the primary workout information
+      const workoutUpdate = await prisma.workout.update({
+        where: {
+          id: parsedWorkoutId,
+        },
+        data: {
+          name: workoutSubmission.name,
+          daysOfWeek: workoutSubmission.daysOfWeek,
+          updatedAt: new Date(),
+        },
+      });
+      res.json({ message: `Updated ${workoutUpdate.name}` });
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: error.errors });
     } else {
+      console.log(error);
       res.status(500).json({ error: "Something went wrong" });
     }
   }

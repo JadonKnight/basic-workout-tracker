@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native"]
 }
 
@@ -75,9 +75,12 @@ model WorkoutExercise {
   id         Int          @id @default(autoincrement())
   workoutId  Int
   exerciseId Int
+  isActive   Boolean      @default(true)
   workout    Workout      @relation(fields: [workoutId], references: [id])
   exercise   Exercise     @relation(fields: [exerciseId], references: [id])
   sets       WorkoutSet[]
+
+  @@unique([workoutId, exerciseId], name: "WorkoutExerciseUnique")
 }
 
 model WorkoutSession {
