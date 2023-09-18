@@ -12,7 +12,7 @@ import type { TrackExerciseData } from "@/app/workouts/[id]/session/track-exerci
 
 // Trying to make sure our backend source of truth is at least kind of
 // followed according to the typesafety checks with zod.
-import type { CreateWorkoutSchemaData } from "@/app/api/workouts/[id]/sessions/route";
+import type { CreateWorkoutSchemaData } from "@/app/api/workout/[id]/sessions/route";
 interface Props {
   workout: NonNullable<FetchWorkoutReturn>;
   lastSessionSets?: { [key: string]: Set[] };
@@ -76,7 +76,7 @@ export default function WorkoutTracker({
     };
 
     const response = await fetch(
-      `/api/workouts/${hashId.encode(workoutId)}/sessions`,
+      `/api/workout/${hashId.encode(workoutId)}/sessions`,
       {
         method: "POST",
         headers: {
