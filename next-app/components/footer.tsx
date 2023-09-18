@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 py-4 text-center">
+    <footer className="bg-gray-800 p-4 text-center">
       <p className="text-sm text-white">
         This app is currently in alpha stage. &copy; Jadon Knight 2022-
         {new Date().getFullYear()}
