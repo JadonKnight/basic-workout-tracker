@@ -1,22 +1,8 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import hashId from "@/lib/hashid";
 import prisma from "@/lib/prisma";
 import z from "zod";
-
-import type { User } from "next-auth";
-
-// TODO: Take this out of this file since I'll likely use it across the app.
-async function getAuthenticatedUser(): Promise<User | null> {
-  const session = await getServerSession(authOptions);
-  const user: User | undefined = session?.user;
-
-  if (!user || !Number(user.id)) {
-    return null;
-  }
-  return user;
-}
+import getAuthenticatedUser from "@/lib/authenticated-user";
 
 const setSchema = z.object({
   startedAt: z.coerce.date().optional(),

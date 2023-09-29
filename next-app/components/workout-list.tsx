@@ -3,11 +3,11 @@
 import DropdownMenu from "@/components/dropdown-menu";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/outline";
 import { unmaskDaysOfWeek } from "@/lib/day-bitmask";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AlertModal from "@/components/alert-modal";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import hashId from "@/lib/hashid";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 interface Workout {
   id: number;
@@ -16,14 +16,28 @@ interface Workout {
   alert?: boolean;
 }
 
-export default function WorkoutList({
-  workoutsProp,
-}: {
-  workoutsProp: Workout[];
-}) {
-  const [workouts, setWorkouts] = useState<Workout[]>(workoutsProp);
+export default function WorkoutList() {
+  const queryClient = useQueryClient();
 
-  const router = useRouter();
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["workouts"],
+    queryFn: async () => {
+      const res = await fetch("/api/workout", {
+        cache: "no-cache",
+      });
+
+      const data = await res.json();
+
+      return data as Workout[];
+    },
+    useErrorBoundary: true,
+  });
+
+  useEffect(() => {
+    if (data) setWorkouts(data);
+  }, [data]);
 
   const deleteWorkout = async (id: number) => {
     const response = await fetch(`/api/workouts/${hashId.encode(id)}`, {
@@ -31,16 +45,20 @@ export default function WorkoutList({
     });
 
     if (!response.ok) {
-      // Since no user input is being used, this should never happen
-      // Redirect to error page for now
-      // TODO: Create better error handling process.
-      router.push("/500");
-      return;
+      throw new Error("Could not delete workout");
     }
 
-    // Filter out the removed workout
     setWorkouts(workouts.filter((workout) => workout.id !== id));
+
+    // Invalidate the query cache since the data is changed
+    queryClient.invalidateQueries({ queryKey: ["workouts"] });
   };
+
+  const { mutate: doDeleteWorkout } = useMutation(deleteWorkout, {
+    useErrorBoundary: true,
+  });
+
+  if (isLoading) return <Loader />;
 
   return (
     <ul className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -53,7 +71,7 @@ export default function WorkoutList({
             title={`${workout.name}`}
             description="Are you sure you want to delete this workout?"
             onConfirm={async () => {
-              deleteWorkout(workout.id);
+              doDeleteWorkout(workout.id);
             }}
             onCancel={() => {
               setWorkouts(
@@ -123,6 +141,29 @@ export default function WorkoutList({
           </div>
         </li>
       ))}
+    </ul>
+  );
+}
+
+import { Skeleton } from "@/components/ui/skeleton";
+
+function Loader() {
+  return (
+    <ul className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      {[...Array(4)].map((_x, i) => {
+        return (
+          <li
+            className="bg-gray-300 rounded-lg p-4 flex flex-col"
+            key={i}
+          >
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 }
