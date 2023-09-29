@@ -13,6 +13,9 @@ export async function GET(_req: Request) {
       userId: Number(user?.id),
       deletedAt: null,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   return NextResponse.json(workouts);
