@@ -5,6 +5,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { maskDaysOfWeek } from "@/lib/day-bitmask";
 import { useRouter } from "next/navigation";
 import AlertModal from "@/components/alert-modal";
+import { useQueryClient } from "@tanstack/react-query";
 
 import type {
   DaysOfWeekSelection,
@@ -28,6 +29,7 @@ export default function CreateWorkout() {
   const [creationError, setCreationError] = useState(false);
 
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const submitWorkout = async () => {
     let invalidData = false;
@@ -51,7 +53,7 @@ export default function CreateWorkout() {
       Thursday: thursdaySelectionRef.current?.checked ?? false,
       Friday: fridaySelectionRef.current?.checked ?? false,
       Saturday: saturdaySelectionRef.current?.checked ?? false,
-      Sunday: sundaySelectionRef.current?.checked ?? false
+      Sunday: sundaySelectionRef.current?.checked ?? false,
     };
     const daysOfWeek = maskDaysOfWeek(dayOfWeekSelection);
 
@@ -60,7 +62,7 @@ export default function CreateWorkout() {
     const data: WorkoutSubmission = {
       name: workoutName as string,
       daysOfWeek,
-      exercises: exercises
+      exercises: exercises,
     };
 
     const response = await fetch("/api/workouts", {
@@ -73,6 +75,13 @@ export default function CreateWorkout() {
       return;
     }
 
+    // Invalidate the workouts since we just created one
+    await queryClient.invalidateQueries({
+      queryKey: ["workouts"],
+      refetchType: "all",
+    });
+
+    // Redirect page
     router.push("/workouts");
   };
 
@@ -98,7 +107,9 @@ export default function CreateWorkout() {
           className="bg-white text-black p-3 border-white rounded focus-visible:outline-slate-400"
         />
         {invalidWorkoutName && (
-          <p className="text-red-500 bg-white p-1 mt-1 rounded border border-red-500">Please enter a workout name</p>
+          <p className="text-red-500 bg-white p-1 mt-1 rounded border border-red-500">
+            Please enter a workout name
+          </p>
         )}
       </div>
       <div className="flex flex-col w-full md:w-6/12 text-white mt-3">
@@ -186,17 +197,22 @@ export default function CreateWorkout() {
         {/* FIXME: Don't re-pull this or cache it somehow when generating another */}
         <SelectExercise
           onSelected={(selection) => {
-            setExercises([...exercises, {
-              id: selection.id,
-              name: selection.name
-            }]);
+            setExercises([
+              ...exercises,
+              {
+                id: selection.id,
+                name: selection.name,
+              },
+            ]);
             setInvalidExercise(false);
           }}
           currentSelection={undefined}
           alwaysEmpty={true}
         />
         {invalidExercise && (
-          <p className="text-red-500 bg-white p-1 mt-1 rounded border border-red-500">Please select at least one exercise.</p>
+          <p className="text-red-500 bg-white p-1 mt-1 rounded border border-red-500">
+            Please select at least one exercise.
+          </p>
         )}
       </div>
 

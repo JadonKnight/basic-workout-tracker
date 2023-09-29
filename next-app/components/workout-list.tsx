@@ -51,7 +51,7 @@ export default function WorkoutList() {
     setWorkouts(workouts.filter((workout) => workout.id !== id));
 
     // Invalidate the query cache since the data is changed
-    queryClient.invalidateQueries({ queryKey: ["workouts"] });
+    await queryClient.invalidateQueries({ queryKey: ["workouts"] });
   };
 
   const { mutate: doDeleteWorkout } = useMutation(deleteWorkout, {
