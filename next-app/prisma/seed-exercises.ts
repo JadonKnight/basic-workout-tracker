@@ -97,6 +97,10 @@ export default async function seedExercises(prisma: PrismaClient) {
       description:
         "Stand with your feet shoulder-width apart and hold dumbbells at your sides with your palms facing your body. Raise the dumbbells up and out to the sides until your arms are parallel to the ground. Lower the dumbbells back down to your sides.",
     },
+    {
+      name: "Barbell Row",
+      description: "",
+    },
   ];
 
   for (const exercise of exercises) {
