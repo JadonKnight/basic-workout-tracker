@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import hashId from "@/lib/hashid";
 import prisma from "@/lib/prisma";
 import z from "zod";
-import getAuthenticatedUser from "@/lib/authenticated-user";
+import getAuthenticatedUser from "@/lib/user-session";
 
 const setSchema = z.object({
   startedAt: z.coerce.date().optional(),
@@ -112,4 +112,12 @@ export async function POST(
   return NextResponse.json({
     workoutSessionId,
   });
+}
+
+// TODO: Fetch the sessions here
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  return NextResponse.json({ a: "HI" });
 }

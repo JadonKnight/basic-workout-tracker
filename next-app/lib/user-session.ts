@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
-import type { User } from "next-auth";
+import type { User as NextAuthUserSession } from "next-auth";
 
-export default async function getAuthenticatedUser(): Promise<User | null> {
+export default async function getAuthenticatedUserSession(): Promise<NextAuthUserSession | null> {
   const session = await getServerSession(authOptions);
-  const user: User | undefined = session?.user;
+  const user: NextAuthUserSession | undefined = session?.user;
 
   if (!user || !Number(user.id)) {
     return null;

@@ -1,4 +1,4 @@
-import getAuthenticatedUser from "@/lib/authenticated-user";
+import getAuthenticatedUser from "@/lib/user-session";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
